@@ -3,7 +3,6 @@ var model = {
 	appName: 'Cuh-Lab',
 
 	ytLinks : [
-		// this first element served as dirty bit for optimization purposes
 		{
 			url: "youtube.com/watch?v=hrjtSROBmAw",
 			votes: 4
