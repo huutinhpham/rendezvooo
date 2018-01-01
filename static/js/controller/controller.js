@@ -1,14 +1,14 @@
 var controller = {
 
 	init: function() {
-
+		this.playlist = this.updatePlaylist();
 	},
 
 	getAppInfo: function() {
 		return appInfo;
 	},
 
-	getPlaylist: function() {
+	updatePlaylist: function() {
 		var ytLinks = model.ytLinks;
 		for (var i = 0; i < ytLinks.length; i++) {
 			ytLinks[i].url = this.parseYTurl(ytLinks[i].url);
@@ -16,43 +16,13 @@ var controller = {
 		return ytLinks;
 	},
 
-	loadPlayer: function(songId) { 
-	  	if (typeof(YT) == 'undefined' || typeof(YT.Player) == 'undefined') {
-	  		var player;
-	    	var tag = document.createElement('script');
-	    	tag.src = "https://www.youtube.com/iframe_api";
-	    	var firstScriptTag = document.getElementsByTagName('script')[0];
-	    	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-	    	window.onYouTubePlayerAPIReady = function() {
-	    		controller.onYouTubeIframeAPIReady(songId);
-	    	};
-
-	  	} else {
-	    	controller.onYouTubeIframeAPIReady(songId);
-	  	}
+	getPlaylist: function() {
+		return this.playlist;
 	},
 
-	onYouTubeIframeAPIReady: function(songId) {
-		var DOMplayer = document.getElementById('player');
-        var player = new YT.Player(DOMplayer, {
-          	videoId: songId,
-          	events: {
-            	'onReady': this.onSongReady,
-            	'onStateChange': this.onSongFinished
-          	}
-        });
-    },
-
-    onSongReady: function(event) {
-    	event.target.playVideo();
-    },
-
-    onSongFinished: function(event) {        
-        if(event.data === 0) {            
-            alert('done');
-        }
-    },
+	getTopSong: function() {
+		return this.getPlaylist()[2].url;
+	},
 
 	parseYTurl: function(url) {
 		var ytID = '';
@@ -64,8 +34,9 @@ var controller = {
 		else {
 		    ytID = url;
 		}
-		    return ytID;
+		return ytID;
 	},
 }
 
 controller.init();
+playlistView.init();

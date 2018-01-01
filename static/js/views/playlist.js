@@ -1,17 +1,15 @@
-var playlist = {
+var playlistView = {
 
 	init: function() {
 		this.playlist = controller.getPlaylist();
 		this.renderPlayer();
-		this.renderSong(this.playlist[0].url);
 		this.renderPlaylist();
 	},
 
 	renderPlayer: function() {
-		var playerElmt = document.createElement('div');
-		playerElmt.id = 'player'
-		$('body').append(playerElmt);
-		ytController.loadPlayer(this.playlist[0].url);
+		var player = document.createElement('player');
+		player.id = 'player'
+		$('body').append(player);
 	},
 
 	renderPlaylist: function() {
@@ -19,14 +17,14 @@ var playlist = {
 		playlistContainer.id = 'playlist-container'
 
 		for (var i = 1; i < this.playlist.length; i++) {
-			var songView = this.renderSong(this.playlist[i].url);
+			var songView = this.renderSongThumbnail(this.playlist[i].url);
 			playlistContainer.append(songView);
 		}
 		$('body').append(playlistContainer);
 
 	},
 
-	renderSong: function(songId) {
+	renderSongThumbnail: function(songId) {
 		var key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
 		var songContainer = document.createElement('div');
 		songContainer.className = 'song-container';
@@ -45,8 +43,10 @@ var playlist = {
 		});
 
 		return songContainer;
+	},
+
+	playVideo: function(event) {
+		event.target.playVideo();
 	}
 
 }
-
-playlist.init();
