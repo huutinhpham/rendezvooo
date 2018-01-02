@@ -9,7 +9,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 function onYouTubeIframeAPIReady() {
 	var DOMplayer = document.getElementById('player');
 	player = new YT.Player('player', {
-       	videoId: controller.getTopSong(),
+       	videoId: 'hrjtSROBmAw',
        	events: {
        	  'onReady': playVideo,
        	  'onStateChange': playNext
@@ -25,5 +25,6 @@ function playNext(event) {
 	if(event.data === 0) {
 		songId = controller.getTopSong();     
         player.loadVideoById(songId);
+        controller.removeTopSong();
     }
 }

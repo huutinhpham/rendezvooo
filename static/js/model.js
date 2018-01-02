@@ -1,6 +1,6 @@
 var model = {
 
-	appName: 'Cuh-Lab',
+	appName: 'Rendezvooo',
 
 	ytLinks : [
 		{
@@ -17,10 +17,5 @@ var model = {
 			url: "www.youtube.com/watch?v=RiZiwmknA-A",
 			votes: 1
 		},
-
-		{
-			url: "https://www.youtube.com/watch?v=fTjm59DFifg",
-			votes: 0
-		},
-	]
+	],
 }

@@ -1,7 +1,7 @@
 var homePageView = {
 
 	init: function() {
-		this.appInfo = controller.getAppInfo();
+		this.appName = controller.getAppName();
 		this.render();
 	},
 
@@ -13,7 +13,7 @@ var homePageView = {
 	renderTitleField: function() {
 		var nameField = document.createElement('h1');
 		nameField.className += "app-name";
-		nameField.innerHTML = this.appInfo.appName;
+		nameField.innerHTML = this.appName;
 		$('body').append(nameField);
 	},
 

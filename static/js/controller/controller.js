@@ -4,8 +4,8 @@ var controller = {
 		this.playlist = this.updatePlaylist();
 	},
 
-	getAppInfo: function() {
-		return appInfo;
+	getAppName: function() {
+		return model.appName;
 	},
 
 	updatePlaylist: function() {
@@ -24,6 +24,10 @@ var controller = {
 		return this.getPlaylist()[2].url;
 	},
 
+	removeTopSong: function() {
+
+	},
+
 	parseYTurl: function(url) {
 		var ytID = '';
 		url = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
@@ -39,4 +43,3 @@ var controller = {
 }
 
 controller.init();
-playlistView.init();
