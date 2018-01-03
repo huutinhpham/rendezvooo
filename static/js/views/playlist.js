@@ -3,8 +3,9 @@ var playlistView = {
 	init: function() {
 		this.renderPlayer();
 		this.renderPlaylist();
+		this.bindRequestBtn();
 	},
-
+	
 	renderPlayer: function() {
 		var player = document.createElement('player');
 		player.id = 'player'
@@ -26,7 +27,7 @@ var playlistView = {
 	},
 
 	renderSongThumbnail: function(songId) {
-
+		console.log('thumbnail');
 		var key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
 		var songContainer = document.createElement('div');
 		songContainer.className = 'song-container';
@@ -46,6 +47,16 @@ var playlistView = {
 		});
 
 		return songContainer;
+	},
+
+	bindRequestBtn: function() {
+		console.log('binded');
+		$('#request-btn').click(function(){
+			console.log('hi');
+			var ytUrl = $('#request-url').val();
+			$('#request-url').val(controller.parseYTurl(ytUrl));
+			console.log($('#request-url').val());
+		});
 	}
 
 }

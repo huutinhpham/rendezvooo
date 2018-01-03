@@ -42,7 +42,7 @@ def generate_playlist():
 		flash(e)
 	return render_template("generate-playlist.html", form=form)
 
-@app.route('/playlist/')
+@app.route('/playlist/', methods=['GET', 'POST'])
 def playlist():
 	return render_template("playlist.html")
 
