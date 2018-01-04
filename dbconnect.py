@@ -9,16 +9,18 @@ def connection():
 
     return c, conn
 
-def GET_song_request(c, conn, pid, ytid):
-	c.execute("SELECT * FROM song WHERE pid = (%s) AND ytid = (%s)", (pid, ytid))
+def GET_song_request(c, conn, pid, yt_id):
+	c.execute("SELECT * FROM song WHERE pid = (%s) AND yt_id = (%s)", (pid, yt_id))
 	return c.fetchone()
 
-def POST_song_request(c, conn, pid, ytid, vote):
-	c.execute("INSERT INTO song (pid, ytid, vote) VALUES (%s, %s, %s)", (pid, ytId, vote))
+def POST_song_request(c, conn, pid, yt_id, vote):
+	c.execute("INSERT INTO song (pid, ytid, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
+	conn.commit()
 
 def GET_playlist_request(c, conn, pid):
 	c.execute("SELECT * FROM playlist WHERE pid = (%s)", (pid,))
 	return c.fetchone()
 
-def POST_playlist_request(c, conn, pid, admin_pw, email, dirty):
+def POST_playlist_request(c, conn, pid, playlist_pw, email, dirty):
 	c.execute("INSERT INTO playlist (pid, playlist_pw, email, dirty) VALUES (%s, %s, %s, %s)", (pid, playlist_pw, email, dirty))
+	conn.commit()

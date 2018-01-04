@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session
-from dbconnect import connection
 from passlib.hash import sha256_crypt
+
+from dbconnect import *
 from my_util import *
 
 import bleach, random, string
@@ -14,24 +15,16 @@ def homepage():
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
 	try:
-		form = GeneratePlaylistForm(request.form)
-		
+		form = GeneratePlaylistForm(request.form)	
 		if request.method == "POST" and form.validate():
 			email = bleach.clean(form.email.data)
 			playlist_pw = sha256_crypt.encrypt((str(form.password.data)))
-			pid = ''
 
 			c, conn = connection()
-
-			while pid == '':
-				pid = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for i in range(8))
-				c.execute("SELECT * FROM Playlist WHERE pid = (%s)", (pid,))
-				if c.fetchone() is not None:
-					pid = ''
-
-			c.execute("INSERT INTO Playlist (pid, playlist_pw, email, dirty) VALUES (%s, %s, %s, %s)", (pid, playlist_pw, email, False))
-			conn.commit()
+			pid = generate_pid(c, conn, 8)
+			POST_playlist_request(c, conn, pid, playlist_pw, email, False)
 			conn.close
+
 			session['admin'] = True
 			session['pid'] = pid
 
@@ -44,32 +37,24 @@ def generate_playlist():
 
 @app.route('/playlist/', methods=['GET', 'POST'])
 def playlist():
-	error = ''
+	error = 'oh'
 	try:
+	
 		c, conn = connection()
 		if request.method == 'POST':
-			ytId = bleach.clean(request.form['yt_id'])
+			yt_id = bleach.clean(request.form.get['yt_id'])
+			error = yt_id
 			pid = '12345678'
 
-			c.execute("SELECT * FROM Playlist WHERE pid = (%s)", (pid,))
-			dbpid = 'hello'
-			c.execute("SELECT * FROM Song WHERE pid = (%s) AND ytid = (%s)", (pid, ytId))
-			song = c.fetchone()
+			# is_pid_exist = GET_playlist_request(c, conn, pid)
+			# is_song_exist = GET_song_request(c, conn, pid, yt_id)
+			# error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
+			POST_song_request(c, conn, pid, yt_id, 0)
 
-			if dbpid is None:
-				error = 'That Playlist does not Exist, please create a Playlist First'
-			elif song is not None:
-				error = 'That song has already been requested'
-			elif len(ytId) != 11:
-				error = 'please enter a valid YouTube URL'
-			else:
-				c.execute("INSERT INTO Song (pid, ytid, vote) VALUES (%s, %s, %s)", (pid, ytId, 0))
-				conn.commit()
-		conn.close()
-		return render_template("playlist.html")
+			conn.close()
 	except Exception as e:
 		flash(e)
-	return render_template("playlist.html")
+	return render_template("playlist.html", error=error)
 
 @app.errorhandler(500)
 def internal_server_error(e):
