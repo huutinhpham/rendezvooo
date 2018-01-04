@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session
 from dbconnect import connection
 from passlib.hash import sha256_crypt
-from assets import GeneratePlaylistForm
+from my_util import *
 
 import bleach, random, string
 
