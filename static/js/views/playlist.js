@@ -3,7 +3,7 @@ var playlistView = {
 	init: function() {
 		this.renderPlayer();
 		this.renderPlaylist();
-		// this.bindRequestBtn();
+		this.bindRequestBtn();
 	},
 	
 	renderPlayer: function() {

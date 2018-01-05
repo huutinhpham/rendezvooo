@@ -23,7 +23,7 @@ def generate_playlist():
 			c, conn = connection()
 			pid = generate_pid(c, conn, 8)
 			POST_playlist_request(c, conn, pid, playlist_pw, email, False)
-			conn.close
+			conn.close()
 
 			session['admin'] = True
 			session['pid'] = pid
@@ -37,7 +37,7 @@ def generate_playlist():
 
 @app.route('/playlist/', methods=['GET', 'POST'])
 def playlist():
-	error = 'oh'
+	error = ""
 	try:
 		c, conn = connection()
 		if request.method == 'POST':
@@ -48,7 +48,7 @@ def playlist():
 			is_pid_exist = GET_playlist_request(c, conn, pid)
 			is_song_exist = GET_song_request(c, conn, pid, yt_id)
 			error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
-			#if error is None: POST_song_request(c, conn, pid, yt_id, 0)
+			POST_song_request(c, conn, pid, yt_id, 0)
 			
 		conn.close()
 	except Exception as e:
