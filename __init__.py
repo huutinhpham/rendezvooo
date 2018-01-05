@@ -39,19 +39,18 @@ def generate_playlist():
 def playlist():
 	error = 'oh'
 	try:
-	
 		c, conn = connection()
 		if request.method == 'POST':
-			yt_id = bleach.clean(request.form.get['yt_id'])
-			error = yt_id
+
+			yt_id = bleach.clean(request.form['yt_id'])
 			pid = '12345678'
 
-			# is_pid_exist = GET_playlist_request(c, conn, pid)
-			# is_song_exist = GET_song_request(c, conn, pid, yt_id)
-			# error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
-			POST_song_request(c, conn, pid, yt_id, 0)
-
-			conn.close()
+			is_pid_exist = GET_playlist_request(c, conn, pid)
+			is_song_exist = GET_song_request(c, conn, pid, yt_id)
+			error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
+			#if error is None: POST_song_request(c, conn, pid, yt_id, 0)
+			
+		conn.close()
 	except Exception as e:
 		flash(e)
 	return render_template("playlist.html", error=error)

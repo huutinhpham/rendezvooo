@@ -3,7 +3,7 @@ var playlistView = {
 	init: function() {
 		this.renderPlayer();
 		this.renderPlaylist();
-		this.bindRequestBtn();
+		// this.bindRequestBtn();
 	},
 	
 	renderPlayer: function() {
@@ -51,7 +51,6 @@ var playlistView = {
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
 			var ytId = controller.parseYTurl($('#request-url').val());
-			console.log(ytId);
 			$.post( "/playlist/", {
 			    yt_id: ytId
 			});

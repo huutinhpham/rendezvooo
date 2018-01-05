@@ -14,7 +14,7 @@ def GET_song_request(c, conn, pid, yt_id):
 	return c.fetchone()
 
 def POST_song_request(c, conn, pid, yt_id, vote):
-	c.execute("INSERT INTO song (pid, ytid, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
+	c.execute("INSERT INTO song (pid, yt_id, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
 	conn.commit()
 
 def GET_playlist_request(c, conn, pid):
