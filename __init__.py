@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, flash, session
+from flask import Flask, render_template, url_for, redirect, request, flash, session, jsonify
 from passlib.hash import sha256_crypt
 
 from dbconnect import *
@@ -37,7 +37,6 @@ def generate_playlist():
 
 @app.route('/playlist/', methods=['GET', 'POST'])
 def playlist():
-	error = ""
 	try:
 		c, conn = connection()
 		if request.method == 'POST':
@@ -48,12 +47,15 @@ def playlist():
 			is_pid_exist = GET_playlist_request(c, conn, pid)
 			is_song_exist = GET_song_request(c, conn, pid, yt_id)
 			error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
-			POST_song_request(c, conn, pid, yt_id, 0)
-			
+			if error is None: 
+				POST_song_request(c, conn, pid, yt_id, 0)
+				error = 'your request has been added'
+			message='trying'
+			return jsonify(result=error)
 		conn.close()
 	except Exception as e:
 		flash(e)
-	return render_template("playlist.html", error=error)
+	return render_template("playlist.html")
 
 @app.errorhandler(500)
 def internal_server_error(e):

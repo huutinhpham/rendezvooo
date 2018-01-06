@@ -8,14 +8,15 @@
     </head>
     
     <body>
-        {% with messages = get_flashed_messages() %}
+<!--         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
                     <div>{{message}}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        {{error}}
+        {{error}} -->
+        <p id="request-feedback"></p>
         <h4>Request Song:</h4>
         <div>
             <input id ="request-url" type="text" placeholder="YouTube URL" value="{{ request.form.yt_id }}">

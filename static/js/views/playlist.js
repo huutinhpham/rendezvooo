@@ -53,9 +53,12 @@ var playlistView = {
 			var ytId = controller.parseYTurl($('#request-url').val());
 			$.post( "/playlist/", {
 			    yt_id: ytId
-			});
+			}, function(data) {
+				console.log(data.result)
+				$('#request-feedback').html(data.result);
+			})
 		});
-	},
+	}
 
 }
 

@@ -28,6 +28,10 @@ var controller = {
 
 	},
 
+	generatePid: function() {
+
+	},
+
 	parseYTurl: function(url) {
 		var ytID = '';
 		url = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
