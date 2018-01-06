@@ -13,6 +13,10 @@ def GET_song_request(c, conn, pid, yt_id):
 	c.execute("SELECT * FROM song WHERE pid = (%s) AND yt_id = (%s)", (pid, yt_id))
 	return c.fetchone()
 
+def GET_all_songs_request(c, conn, pid):
+	c.execute("SELECT * FROM song WHERE pid =(%s)", (pid,))
+	return c.fetchall()
+
 def POST_song_request(c, conn, pid, yt_id, vote):
 	c.execute("INSERT INTO song (pid, yt_id, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
 	conn.commit()

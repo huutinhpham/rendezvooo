@@ -1,23 +1,21 @@
 var controller = {
 
 	init: function() {
-		this.playlist = this.updatePlaylist();
+		this.songs = this.updateSongs();
 	},
 
 	getAppName: function() {
 		return model.appName;
 	},
 
-	updatePlaylist: function() {
-		var ytLinks = model.ytLinks;
-		for (var i = 0; i < ytLinks.length; i++) {
-			ytLinks[i].url = this.parseYTurl(ytLinks[i].url);
-		}
-		return ytLinks;
+	updateSongs: function() {
+		$.get("/_get_all_songs/", function(songs){
+			this.songs = songs;
+		});
 	},
 
-	getPlaylist: function() {
-		return this.playlist;
+	getSongs: function() {
+		return this.songs;
 	},
 
 	getTopSong: function() {

@@ -28,8 +28,7 @@ def generate_playlist():
 			session['admin'] = True
 			session['pid'] = pid
 
-			flash("Your New Playlist Code is " + pid)
-			return redirect(url_for('homepage'))
+			return jsonify(pid=pid)
 
 	except Exception as e:
 		flash(e)
@@ -49,13 +48,21 @@ def playlist():
 			error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
 			if error is None: 
 				POST_song_request(c, conn, pid, yt_id, 0)
-				error = 'your request has been added'
-			message='trying'
+				error = 'your song request has been added'
 			return jsonify(result=error)
 		conn.close()
 	except Exception as e:
 		flash(e)
 	return render_template("playlist.html")
+
+@app.route('/_get_all_songs/', methods=['GET'])
+def _get_all_songs():
+	c, conn = connection()
+	if request.method == 'GET':
+		pid = '12345678'
+		result = GET_all_songs_request(c, conn, pid)
+		return jsonify(result=result)
+
 
 @app.errorhandler(500)
 def internal_server_error(e):

@@ -13,17 +13,19 @@ var playlistView = {
 	},
 
 	renderPlaylist: function() {
+		$.get("/_get_all_songs", function(songs){
+			var playlistContainer = document.createElement('div');
+			playlistContainer.id = 'playlist-container';
+			songs = songs.result;
+			for (var i = 1; i < songs.length; i++) {
+				console.log(songs[i]);
+				var songView = playlistView.renderSongThumbnail(songs[i][1]);
+				playlistContainer.append(songView);
+			}
 
-		var playlist = controller.getPlaylist();
-		var playlistContainer = document.createElement('div');
-		playlistContainer.id = 'playlist-container'
+			$('body').append(playlistContainer);
 
-		for (var i = 1; i < playlist.length; i++) {
-			var songView = this.renderSongThumbnail(playlist[i].url);
-			playlistContainer.append(songView);
-		}
-
-		$('body').append(playlistContainer);
+		})
 	},
 
 	renderSongThumbnail: function(songId) {
@@ -51,7 +53,7 @@ var playlistView = {
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
 			var ytId = controller.parseYTurl($('#request-url').val());
-			$.post( "/playlist/", {
+			$.post("/playlist/", {
 			    yt_id: ytId
 			}, function(data) {
 				console.log(data.result)
