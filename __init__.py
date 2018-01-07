@@ -15,6 +15,7 @@ def test():
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
 	try:
+		response = ''
 		c, conn = connection()
 		if request.method == 'POST':
 
@@ -26,13 +27,11 @@ def homepage():
 			response = error
 			if error is None:
 				session['pid'] = pid
-				session['playlist'] = True
 				session['admin'] = False
-				response={'redirect': 1, 'redirect_url': '/playlist/'}
-			return jsonify(response)
+				return redirect(url_for('playlist'))
 	except Exception as e:
 		return str(e)
-	return render_template("homepage.html")
+	return render_template("homepage.html", response=response)
 
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
@@ -47,10 +46,10 @@ def generate_playlist():
 			POST_playlist_request(c, conn, pid, playlist_pw, email, False)
 			conn.close()
 
-			session['admin'] = True
 			session['pid'] = pid
+			session['admin'] = False
 
-			return jsonify(pid=pid)
+			return redirect(url_for('playlist'))
 
 	except Exception as e:
 		flash(e)
@@ -75,7 +74,7 @@ def playlist():
 		conn.close()
 	except Exception as e:
 		flash(e)
-	return render_template("playlist.html")
+	return render_template("playlist.html", pid=session['pid'])
 
 @app.route('/_get_all_songs/', methods=['GET'])
 def _get_all_songs():
@@ -99,4 +98,4 @@ def internal_server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
