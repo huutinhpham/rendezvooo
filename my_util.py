@@ -11,11 +11,18 @@ def generate_pid(c, conn, length):
 			pid = ''
 	return pid
 
-def validate_song_request(is_pid_exist, is_song_exist, yt_id):
+def trim_pid(pid):
+	return ''.join(pid.split())
+
+def validate_playlist_request(is_pid_exist):
 	error = None
 	if is_pid_exist is None:
-		error = 'That Playlist does not Exist, please create a Playlist First'
-	elif is_song_exist is not None:
+		error='That playlist does not exist, please create a new playlist.'
+	return error
+
+def validate_song_request(is_pid_exist, is_song_exist, yt_id):
+	error = validate_playlist_request(is_pid_exist)
+	if is_song_exist is not None:
 		error = 'That song has already been requested'
 	elif len(yt_id) != 11:
 		error = 'Please enter a valid YouTube URL'

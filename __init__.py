@@ -8,9 +8,31 @@ import bleach, random, string
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/test/')
+def test():
+	return "test homie"
+
+@app.route('/', methods=['GET', 'POST'])
 def homepage():
-    return render_template("homepage.html")
+	try:
+		c, conn = connection()
+		if request.method == 'POST':
+
+			pid = bleach.clean(request.form['pid'])
+			pid = trim_pid(pid)
+
+			is_pid_exist = GET_playlist_request(c, conn, pid)
+			error = validate_playlist_request(is_pid_exist)
+			response = error
+			if error is None:
+				session['pid'] = pid
+				session['playlist'] = True
+				session['admin'] = False
+				response={'redirect': 1, 'redirect_url': '/playlist/'}
+			return jsonify(response)
+	except Exception as e:
+		return str(e)
+	return render_template("homepage.html")
 
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
@@ -41,7 +63,7 @@ def playlist():
 		if request.method == 'POST':
 
 			yt_id = bleach.clean(request.form['yt_id'])
-			pid = '12345678'
+			pid = session['pid']
 
 			is_pid_exist = GET_playlist_request(c, conn, pid)
 			is_song_exist = GET_song_request(c, conn, pid, yt_id)
@@ -49,7 +71,7 @@ def playlist():
 			if error is None: 
 				POST_song_request(c, conn, pid, yt_id, 0)
 				error = 'your song request has been added'
-			return jsonify(result=error)
+			return jsonify(error=error)
 		conn.close()
 	except Exception as e:
 		flash(e)
@@ -59,7 +81,7 @@ def playlist():
 def _get_all_songs():
 	c, conn = connection()
 	if request.method == 'GET':
-		pid = '12345678'
+		pid = session['pid']
 		result = GET_all_songs_request(c, conn, pid)
 		return jsonify(result=result)
 
@@ -68,8 +90,13 @@ def _get_all_songs():
 def internal_server_error(e):
 	return str(e)
 
+@app.errorhandler(400)
+def internal_server_error(e):
+	return str(e)
+
+
 
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

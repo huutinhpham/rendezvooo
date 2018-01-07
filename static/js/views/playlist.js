@@ -18,7 +18,6 @@ var playlistView = {
 			playlistContainer.id = 'playlist-container';
 			songs = songs.result;
 			for (var i = 1; i < songs.length; i++) {
-				console.log(songs[i]);
 				var songView = playlistView.renderSongThumbnail(songs[i][1]);
 				playlistContainer.append(songView);
 			}
@@ -56,8 +55,7 @@ var playlistView = {
 			$.post("/playlist/", {
 			    yt_id: ytId
 			}, function(data) {
-				console.log(data.result)
-				$('#request-feedback').html(data.result);
+				$('.request-feedback').html(data.error);
 			})
 		});
 	}

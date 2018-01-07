@@ -1,43 +1,31 @@
 var homePageView = {
 
 	init: function() {
-		this.appName = controller.getAppName();
-		this.render();
+		this.bindPidSubmitBtn();
+		this.bindNewPlaylistBtn();
 	},
 
-	render: function() {
-		this.renderTitleField();
-		this.renderFormField();
+	bindNewPlaylistBtn: function() {
+		$('#new-playlist-btn').click(function(){
+			window.location.href='/generate-playlist/'
+		});
 	},
 
-	renderTitleField: function() {
-		var nameField = document.createElement('h1');
-		nameField.className += "app-name";
-		nameField.innerHTML = this.appName;
-		$('body').append(nameField);
-	},
-
-	renderFormField: function() {
-		var linkForm = document.createElement('form');
-
-		var linkInput = document.createElement('input');
-		linkInput.type = 'text';
-		linkInput.name = 'playlist-link';
-
-		var submitLinkBtn = document.createElement('input');
-		submitLinkBtn.type = 'submit';
-		submitLinkBtn.name = 'submit-link-btn';
-
-		var newLinkBtn = document.createElement('button');
-		newLinkBtn.type = 'button';
-		newLinkBtn.innerHTML = 'New Playlist';
-
-		linkForm.append(linkInput);
-		linkForm.append(newLinkBtn);
-		linkForm.append(submitLinkBtn);
-
-		$('body').append(linkForm);		
-	},
+	bindPidSubmitBtn: function() {
+		$('#pid-submit-btn').click(function(){
+			var pid = $('#pid-input').val();
+			$.post('/', {
+			    pid: pid
+			}, function(response) {
+				console.log(response)
+				if (response.redirect !== undefined && response.redirect_url) {
+					window.location.href = response.redirect_url
+				} else {
+					$('.request-feedback').html(response);
+				}
+			})
+		});
+	}
 }
 
 homePageView.init();
