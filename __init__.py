@@ -76,14 +76,21 @@ def playlist():
 		flash(e)
 	return render_template("playlist.html", pid=session['pid'])
 
-@app.route('/_get_all_songs/', methods=['GET'])
-def _get_all_songs():
+def _get_all_songs_sorted():
 	c, conn = connection()
-	if request.method == 'GET':
-		pid = session['pid']
-		result = GET_all_songs_request(c, conn, pid)
-		return jsonify(result=result)
+	pid = session['pid']
+	result = GET_all_songs_request_sorted(c, conn, pid)
+	return result
 
+@app.route('/get_all_songs_sorted/', methods=['GET'])
+def get_all_JSON_songs_sorted():
+	if request.method == 'GET':
+		return jsonify(_get_all_songs_sorted())
+
+@app.route('/get_top_song/', methods=['GET'])
+def get_top_song():
+	if request.method == 'GET':
+		return jsonify(_get_all_songs_sorted()[0])
 
 @app.errorhandler(500)
 def internal_server_error(e):
@@ -92,10 +99,6 @@ def internal_server_error(e):
 @app.errorhandler(400)
 def internal_server_error(e):
 	return str(e)
-
-
-
-
 
 if __name__ == "__main__":
     app.run()

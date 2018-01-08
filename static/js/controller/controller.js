@@ -1,21 +1,19 @@
 var controller = {
 
 	init: function() {
-		this.songs = this.updateSongs();
+
 	},
 
 	getAppName: function() {
 		return model.appName;
 	},
 
-	updateSongs: function() {
-		$.get("/_get_all_songs/", function(songs){
-			this.songs = songs;
-		});
-	},
-
 	getSongs: function() {
-		return this.songs;
+		return $.ajax({
+			type: 'GET',
+			url: "/_get_all_songs/", 
+			async: false
+		}).responseText;
 	},
 
 	getTopSong: function() {

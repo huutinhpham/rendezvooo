@@ -4,6 +4,20 @@ var playlistView = {
 		this.renderPlayer();
 		this.renderPlaylist();
 		this.bindRequestBtn();
+		this.songIndex = 0;
+	},
+
+	bindRequestBtn: function() {
+		$('#request-btn').click(function(){
+			var ytId = controller.parseYTurl($('#request-url').val());
+			console.log(ytId);
+			$.post("/playlist/", {
+			    yt_id: ytId
+			}, function(data) {
+				$('.request-feedback').html(data.error);
+				//render and bind thumbnail if success
+			})
+		});
 	},
 	
 	renderPlayer: function() {
@@ -12,12 +26,27 @@ var playlistView = {
 		$('body').append(player);
 	},
 
+	playFirst: function(event) {
+		$.get("/get_top_song/", function(song){
+			player.loadVideoById(song[1]);
+			event.target.playVideo();
+		})    
+	},
+
+	playNext: function(event) {
+		if(event.data === 0) {
+			$.get("/get_all_songs_sorted/", function(songs){
+				playlistView.songIndex += 1;
+				player.loadVideoById(songs[playlistView.songIndex][1]);
+			})    
+    	}
+	},
+
 	renderPlaylist: function() {
-		$.get("/_get_all_songs", function(songs){
+		$.get("/get_all_songs_sorted/", function(songs){
 			var playlistContainer = document.createElement('div');
 			playlistContainer.id = 'playlist-container';
-			songs = songs.result;
-			for (var i = 1; i < songs.length; i++) {
+			for (var i = 0; i < songs.length; i++) {
 				var songView = playlistView.renderSongThumbnail(songs[i][1]);
 				playlistContainer.append(songView);
 			}
@@ -48,17 +77,6 @@ var playlistView = {
 
 		return songContainer;
 	},
-
-	bindRequestBtn: function() {
-		$('#request-btn').click(function(){
-			var ytId = controller.parseYTurl($('#request-url').val());
-			$.post("/playlist/", {
-			    yt_id: ytId
-			}, function(data) {
-				$('.request-feedback').html(data.error);
-			})
-		});
-	}
 
 }
 
