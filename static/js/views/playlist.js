@@ -47,7 +47,7 @@ var playlistView = {
 			var playlistContainer = document.createElement('div');
 			playlistContainer.id = 'playlist-container';
 			for (var i = 0; i < songs.length; i++) {
-				var songView = playlistView.renderSongThumbnail(songs[i][1]);
+				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2]);
 				playlistContainer.append(songView);
 			}
 
@@ -56,27 +56,49 @@ var playlistView = {
 		})
 	},
 
-	renderSongThumbnail: function(songId) {
+	renderSongThumbnail: function(songId, likes) {
 		var key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
 		var songContainer = document.createElement('div');
 		songContainer.className = 'song-container';
+		songContainer.id = songId
 
 		$.getJSON('https://www.googleapis.com/youtube/v3/videos?key='+key+'&part=snippet&id='+songId, function(data) {
 
 			var thumbnail = document.createElement('img');
 			thumbnail.className = 'thumbnail';
+			thumbnail.id = songId
 			thumbnail.src = data.items[0].snippet.thumbnails.medium.url;
 
 			var songTitle = document.createElement('p');
-			songTitle.className = 'song-title';
+			songTitle.className='song-title';
 			songTitle.innerHTML = data.items[0].snippet.title;
 
-			songContainer.append(thumbnail);
+			var songLikes = document.createElement('p')
+			songLikes.className='song-likes'
+			songLikes.innerHTML = likes;
+
 			songContainer.append(songTitle);
+			songContainer.append(thumbnail);
+			songContainer.append(songLikes);
+
+			playlistView.bindThumbnail(songId);
 		});
 
 		return songContainer;
 	},
+
+	bindThumbnail: function(songId) {
+		$('#' + songId + ' img').dblclick(function(songId){
+			return function() {
+				$.post("/liked/", {
+					yt_id: songId
+				}).success(function() {
+					var likes = parseInt($('#' + songId + ' .song-likes').html())
+					$('#' + songId + ' .song-likes').html(likes += 1)
+				});
+			}
+		}(songId));
+	}
 
 }
 

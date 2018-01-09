@@ -14,24 +14,27 @@ def test():
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
-	try:
-		response = ''
+	error = ''
+	form = AccessPlaylistForm(request.form)
+	if request.method == 'POST' and form.validate():
+		collaborator = bleach.clean(form.name.data)
+		pid = trim_pid(bleach.clean(form.pid.data))
+
 		c, conn = connection()
-		if request.method == 'POST':
+		is_pid_exist = GET_playlist_request(c, conn, pid)
+		is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
+		error = validate_playlist_request(is_pid_exist)
 
-			pid = bleach.clean(request.form['pid'])
-			pid = trim_pid(pid)
+		if error is None:
+			session['name'] = collaborator
+			session['pid'] = pid
+			session['admin'] = False
+			if is_name_exist is None: 
+				POST_collaborator_request(c, conn, pid, collaborator)
+		#still need to return response to html
+			return redirect(url_for('playlist'))
 
-			is_pid_exist = GET_playlist_request(c, conn, pid)
-			error = validate_playlist_request(is_pid_exist)
-			response = error
-			if error is None:
-				session['pid'] = pid
-				session['admin'] = False
-				return redirect(url_for('playlist'))
-	except Exception as e:
-		return str(e)
-	return render_template("homepage.html", response=response)
+	return render_template("homepage.html", response=error, form=form)
 
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
@@ -80,6 +83,7 @@ def _get_all_songs_sorted():
 	c, conn = connection()
 	pid = session['pid']
 	result = GET_all_songs_request_sorted(c, conn, pid)
+	conn.close()
 	return result
 
 @app.route('/get_all_songs_sorted/', methods=['GET'])
@@ -91,6 +95,21 @@ def get_all_JSON_songs_sorted():
 def get_top_song():
 	if request.method == 'GET':
 		return jsonify(_get_all_songs_sorted()[0])
+
+@app.route('/liked/', methods=['POST'])
+def liked():
+	c, conn = connection()
+	if request.method == 'POST':
+		pid = session['pid']
+		collaborator = session['name']
+		yt_id = bleach.clean(request.form['yt_id'])
+
+		is_like_exist = GET_like_request(c, conn, pid, yt_id, collaborator)
+		if is_like_exist is None:
+			UPDATE_song_likes_request(c, conn, pid, yt_id)
+			POST_like_request(c, conn, pid, yt_id, collaborator)
+			
+		conn.close()
 
 @app.errorhandler(500)
 def internal_server_error(e):

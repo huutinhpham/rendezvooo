@@ -17,7 +17,7 @@ def trim_pid(pid):
 def validate_playlist_request(is_pid_exist):
 	error = None
 	if is_pid_exist is None:
-		error='That playlist does not exist, please create a new playlist.'
+		error='That playlist does not exist. Forgot playlist code?'
 	return error
 
 def validate_song_request(is_pid_exist, is_song_exist, yt_id):
@@ -29,10 +29,16 @@ def validate_song_request(is_pid_exist, is_song_exist, yt_id):
 	return error
 
 
+class AccessPlaylistForm(Form):
+	name = TextField('Name')
+	pid = TextField('Playlist Code')
+
+
 class GeneratePlaylistForm(Form):
 	email = EmailField('Email Address', [validators.DataRequired(), validators.Email()])
 	password = PasswordField('New Playlist Password', [
 		validators.Required(), 
-		validators.EqualTo('confirm', message='Passwords must match')
+		validators.EqualTo('confirm', message='Passwords must match'),
+		validators.Length(min=7)
 	])
 	confirm = PasswordField('Confirm Password')
