@@ -92,9 +92,12 @@ var playlistView = {
 			return function() {
 				$.post("/liked/", {
 					yt_id: songId
-				}).success(function() {
-					var likes = parseInt($('#' + songId + ' .song-likes').html())
-					$('#' + songId + ' .song-likes').html(likes += 1)
+				}, function(data) {
+					console.log(data.response == 'success')
+					if (data.response == 'success') {
+						var likes = parseInt($('#' + songId + ' .song-likes').html())
+						$('#' + songId + ' .song-likes').html(likes += 1)
+					}
 				});
 			}
 		}(songId));

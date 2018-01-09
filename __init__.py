@@ -128,8 +128,9 @@ def liked():
 		if is_like_exist is None:
 			UPDATE_song_likes_request(c, conn, pid, yt_id)
 			POST_like_request(c, conn, pid, yt_id, collaborator)
-			
+			return jsonify(response='success')
 		conn.close()
+		return jsonify(response='fail')
 
 @app.errorhandler(500)
 def internal_server_error(e):
