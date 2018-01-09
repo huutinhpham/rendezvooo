@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session, jsonify
-from passlib.hash import sha256_crypt
+from passlib.hash import pbkdf2_sha256
 
 from dbconnect import *
 from my_util import *
@@ -15,26 +15,46 @@ def test():
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
 	error = ''
-	form = AccessPlaylistForm(request.form)
-	if request.method == 'POST' and form.validate():
-		collaborator = bleach.clean(form.name.data)
-		pid = trim_pid(bleach.clean(form.pid.data))
+	try:
+		form = AccessPlaylistForm(request.form)
 
-		c, conn = connection()
-		is_pid_exist = GET_playlist_request(c, conn, pid)
-		is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
-		error = validate_playlist_request(is_pid_exist)
+		if request.method == 'POST' and form.validate():
 
-		if error is None:
-			session['name'] = collaborator
-			session['pid'] = pid
-			session['admin'] = False
-			if is_name_exist is None: 
-				POST_collaborator_request(c, conn, pid, collaborator)
-		#still need to return response to html
-			return redirect(url_for('playlist'))
+			collaborator = bleach.clean(form.name.data)
+			pid = trim_pid(bleach.clean(form.pid.data))
+			encrypted_opt_pw = check_opt_pw(form.opt_pw.data)
 
-	return render_template("homepage.html", response=error, form=form)
+			c, conn = connection()
+
+			### VERIFY IF PLAYLIST EXISTS ###
+			playlist_error = None
+			if len(pid) != 8:
+				error = "Playlist Code should have exactly 8 characters."
+				return render_template("homepage.html", error=error, form=form)
+			else:
+				is_pid_exist = GET_playlist_request(c, conn, pid)
+				playlist_error = validate_playlist_request(is_pid_exist)
+
+			### VERIFY USER IF USER IS NOT NEW ###
+			is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
+			collaborator_error = None
+			if is_name_exist != None:
+				collaborator_error = validate_name_request(collaborator, is_name_exist[2], form.opt_pw.data)
+			else:
+				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw)
+
+			error = playlist_error or collaborator_error
+			conn.close()
+
+			if error is None:
+				session['pid'] = pid
+				session['collaborator'] = collaborator
+				session['admin'] = False
+				return redirect(url_for('playlist'))
+	except Exception as e:
+		flash(e)
+
+	return render_template("homepage.html", error=error, form=form)
 
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
@@ -42,7 +62,7 @@ def generate_playlist():
 		form = GeneratePlaylistForm(request.form)	
 		if request.method == "POST" and form.validate():
 			email = bleach.clean(form.email.data)
-			playlist_pw = sha256_crypt.encrypt((str(form.password.data)))
+			playlist_pw = pbkdf2_sha256.encrypt((str(form.password.data)))
 
 			c, conn = connection()
 			pid = generate_pid(c, conn, 8)
@@ -101,7 +121,7 @@ def liked():
 	c, conn = connection()
 	if request.method == 'POST':
 		pid = session['pid']
-		collaborator = session['name']
+		collaborator = session['collaborator']
 		yt_id = bleach.clean(request.form['yt_id'])
 
 		is_like_exist = GET_like_request(c, conn, pid, yt_id, collaborator)

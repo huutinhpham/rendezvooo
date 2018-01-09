@@ -1,5 +1,6 @@
 from wtforms import Form, BooleanField, TextField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
+from passlib.hash import pbkdf2_sha256
 from dbconnect import *
 import random, string
 
@@ -28,10 +29,25 @@ def validate_song_request(is_pid_exist, is_song_exist, yt_id):
 		error = 'Please enter a valid YouTube URL'
 	return error
 
+def validate_name_request(collaborator, db_encrypted_opt_pw, password):
+	error = None
+	if db_encrypted_opt_pw == None and password != '':
+		error = "Name is taken. Please try again"
+	if (db_encrypted_opt_pw != None) and not (pbkdf2_sha256.verify(password, db_encrypted_opt_pw)):
+		error = "Password is incorrect, or name is taken. Please try again."
+	return error
+
+
+def check_opt_pw(opt_pw):
+	if opt_pw != '':
+		return pbkdf2_sha256.encrypt((str(opt_pw)))
+	return None
+
 
 class AccessPlaylistForm(Form):
 	name = TextField('Name')
 	pid = TextField('Playlist Code')
+	opt_pw = PasswordField('Password (Optional)')
 
 
 class GeneratePlaylistForm(Form):

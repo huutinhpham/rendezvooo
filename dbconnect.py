@@ -33,12 +33,12 @@ def POST_playlist_request(c, conn, pid, playlist_pw, email, dirty):
 	c.execute("INSERT INTO playlist (pid, playlist_pw, email, dirty) VALUES (%s, %s, %s, %s)", (pid, playlist_pw, email, dirty))
 	conn.commit()
 
-def GET_collaborator_request(c, conn, pid, name):
-	c.execute("SELECT * FROM collaborator WHERE pid=(%s) AND name=(%s)", (pid, name))
+def GET_collaborator_request(c, conn, pid, collaborator):
+	c.execute("SELECT * FROM collaborator WHERE pid=(%s) AND collaborator=(%s)", (pid, collaborator))
 	return c.fetchone()
 
-def POST_collaborator_request(c, conn, pid, name):
-	c.execute("INSERT INTO collaborator (pid, name) VALUES (%s, %s)", (pid, name))
+def POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw):
+	c.execute("INSERT INTO collaborator (pid, collaborator, encrypted_opt_pw) VALUES (%s, %s, %s)", (pid, collaborator, encrypted_opt_pw))
 	conn.commit()
 
 def GET_like_request(c, conn, pid, yt_id, name):
