@@ -38,15 +38,15 @@ def GET_collaborator_request(c, conn, pid, collaborator):
 	return c.fetchone()
 
 def POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, song_index):
-	c.execute("INSERT INTO collaborator (pid, collaborator, encrypted_opt_pw, song_index) VALUES (%s, %s, %s)", (pid, collaborator, encrypted_opt_pw, song_index))
+	c.execute("INSERT INTO collaborator (pid, collaborator, encrypted_opt_pw, song_index) VALUES (%s, %s, %s, %s)", (pid, collaborator, encrypted_opt_pw, song_index))
 	conn.commit()
 
 def UPDATE_collaborator_index_request(c, conn, pid, collaborator, song_index):
 	c.execute("UPDATE collaborator SET song_index=(%s) WHERE pid=(%s) AND collaborator=(%s)", (song_index, pid, collaborator))
 	conn.commit()
 
-def GET_like_request(c, conn, pid, yt_id, name):
-	c.execute("SELECT * FROM vote WHERE pid=(%s) AND yt_id=(%s) AND name=(%s)", (pid, yt_id, name))
+def GET_like_request(c, conn, pid, yt_id, collaborator):
+	c.execute("SELECT * FROM vote WHERE pid=(%s) AND yt_id=(%s) AND collaborator=(%s)", (pid, yt_id, collaborator))
 	return c.fetchone()
 
 def POST_like_request(c, conn, pid, yt_id, collaborator):

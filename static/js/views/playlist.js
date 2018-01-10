@@ -70,13 +70,12 @@ var playlistView = {
 			songTitle.className='song-title';
 			songTitle.innerHTML = data.items[0].snippet.title;
 
-			var songLikes = document.createElement('p')
-			songLikes.className='song-likes'
-			songLikes.innerHTML = likes;
+			var likeBtn = playlistView.renderLikeBtn(songId, likes)
 
 			songContainer.append(songTitle);
 			songContainer.append(thumbnail);
-			songContainer.append(songLikes);
+			songContainer.append(likeBtn);
+			playlistView.bindLikeBtn(songId);
 
 			playlistView.bindThumbnail(songId);
 		});
@@ -92,14 +91,49 @@ var playlistView = {
 				}, function(data) {
 					console.log(data.response == 'success')
 					if (data.response == 'success') {
-						var likes = parseInt($('#' + songId + ' .song-likes').html())
-						$('#' + songId + ' .song-likes').html(likes += 1)
+						console.log('hello')
+						$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn("&#x2764", 5))
 					}
 				});
 			}
 		}(songId));
-	}
+	},
 
+	renderLikeBtn: function(songId, likes) {
+		var likeBtn = document.createElement('button');
+		likeBtn.className = "like-btn"
+		likeBtn.innerHTML = "&#x2661" + " " + likes;
+
+		return likeBtn;
+	},
+
+
+	bindLikeBtn: function(songId) {
+		$('#' + songId + ' .like-btn').click(function(songId){
+			return function() {
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, 4))
+				playlistView.bindUnlikeBtn(songId);
+			}
+		}(songId));
+	},
+
+	renderUnlikeBtn: function(songId, likes) {
+		var likeBtn = document.createElement('button');
+		likeBtn.className = "like-btn"
+		likeBtn.innerHTML = "&#x2764" + " " + likes;
+
+		playlistView.bindUnlikeBtn(songId)
+		return likeBtn;
+	},
+
+	bindUnlikeBtn: function(songId) {
+		$('#' + songId + ' .like-btn').click(function(songId){
+			return function() {
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, 3))
+				playlistView.bindLikeBtn(songId)
+			}
+		}(songId));
+	}
 }
 
 playlistView.init();
