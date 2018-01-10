@@ -4,7 +4,6 @@ var playlistView = {
 		this.renderPlayer();
 		this.renderPlaylist();
 		this.bindRequestBtn();
-		this.songIndex = 0;
 	},
 
 	bindRequestBtn: function() {
@@ -26,24 +25,22 @@ var playlistView = {
 		$('body').append(player);
 	},
 
-	playFirst: function(event) {
-		$.get("/get_top_song/", function(song){
-			player.loadVideoById(song[1]);
-			event.target.playVideo();
+	loadCurrentSong: function(event) {
+		$.get("/get_current_song/", function(song){
+			event.target.cueVideoById(song[1]);
 		})    
 	},
 
-	playNext: function(event) {
+	playNextSong: function(event) {
 		if(event.data === 0) {
-			$.get("/get_all_songs_sorted/", function(songs){
-				playlistView.songIndex += 1;
-				player.loadVideoById(songs[playlistView.songIndex][1]);
+			$.get("/get_next_song/", function(song){
+				event.target.loadVideoById(song[1]);
 			})    
     	}
 	},
 
 	renderPlaylist: function() {
-		$.get("/get_all_songs_sorted/", function(songs){
+		$.get("/get_all_songs/", function(songs){
 			var playlistContainer = document.createElement('div');
 			playlistContainer.id = 'playlist-container';
 			for (var i = 0; i < songs.length; i++) {

@@ -41,7 +41,7 @@ def homepage():
 			if is_name_exist != None:
 				collaborator_error = validate_name_request(collaborator, is_name_exist[2], form.opt_pw.data)
 			else:
-				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw)
+				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, 0)
 
 			error = playlist_error or collaborator_error
 			conn.close()
@@ -99,22 +99,43 @@ def playlist():
 		flash(e)
 	return render_template("playlist.html", pid=session['pid'])
 
-def _get_all_songs_sorted():
-	c, conn = connection()
-	pid = session['pid']
-	result = GET_all_songs_request_sorted(c, conn, pid)
-	conn.close()
-	return result
-
-@app.route('/get_all_songs_sorted/', methods=['GET'])
-def get_all_JSON_songs_sorted():
+@app.route('/get_current_song/', methods=['GET'])
+def get_current_song():
 	if request.method == 'GET':
-		return jsonify(_get_all_songs_sorted())
+		pid = session['pid']
+		collaborator = session['collaborator']
+		c, conn = connection()
+		index = GET_collaborator_request(c, conn, pid, collaborator)[3]
+		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+		conn.close()
+		return jsonify(playlist_songs[index])
 
-@app.route('/get_top_song/', methods=['GET'])
-def get_top_song():
+@app.route('/get_next_song/', methods=['GET'])
+def get_next_song():
 	if request.method == 'GET':
-		return jsonify(_get_all_songs_sorted()[0])
+		pid = session['pid']
+		collaborator = session['collaborator']
+
+		c, conn = connection()
+		index = GET_collaborator_request(c, conn, pid, collaborator)[3] + 1
+		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+
+		if index >= len(playlist_songs):
+			index = 0
+
+		UPDATE_collaborator_index_request(c, conn, pid, collaborator, index)
+
+		conn.close()
+		return jsonify(playlist_songs[index])
+
+@app.route('/get_all_songs/', methods=['GET'])
+def get_all_songs():
+	if request.method == 'GET':
+		c, conn = connection()
+		playlist_songs = GET_all_songs_request_sorted(c, conn, session['pid'])
+		conn.close()
+		return jsonify(playlist_songs)
+
 
 @app.route('/liked/', methods=['POST'])
 def liked():

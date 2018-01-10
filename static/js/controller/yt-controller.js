@@ -10,8 +10,8 @@ function onYouTubeIframeAPIReady() {
 	var DOMplayer = document.getElementById('player');
 	player = new YT.Player('player', {
        	events: {
-       	  'onReady': playlistView.playFirst,
-       	  'onStateChange': playlistView.playNext
+       	  'onReady': playlistView.loadCurrentSong,
+       	  'onStateChange': playlistView.playNextSong
        	}
    	});
 }
