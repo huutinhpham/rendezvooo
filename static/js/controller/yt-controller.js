@@ -1,5 +1,3 @@
-var player;
-
 var tag = document.createElement('script');
 
 tag.src = "https://www.youtube.com/iframe_api";
@@ -8,7 +6,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 function onYouTubeIframeAPIReady() {
 	var DOMplayer = document.getElementById('player');
-	player = new YT.Player('player', {
+	playlistView.player = new YT.Player('player', {
        	events: {
        	  'onReady': playlistView.loadCurrentSong,
        	  'onStateChange': playlistView.playNextSong

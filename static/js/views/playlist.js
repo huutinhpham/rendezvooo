@@ -4,6 +4,7 @@ var playlistView = {
 		this.renderPlayer();
 		this.renderPlaylist();
 		this.bindRequestBtn();
+		this.player = player;
 	},
 
 	bindRequestBtn: function() {
@@ -19,9 +20,9 @@ var playlistView = {
 	},
 	
 	renderPlayer: function() {
-		var player = document.createElement('player');
-		player.id = 'player'
-		$('body').append(player);
+		var playerElm = document.createElement('player');
+		playerElm.id = 'player'
+		$('body').append(playerElm);
 	},
 
 	loadCurrentSong: function(event) {
@@ -62,7 +63,6 @@ var playlistView = {
 
 			var thumbnail = document.createElement('img');
 			thumbnail.className = 'thumbnail';
-			thumbnail.id = songId
 			thumbnail.src = data.items[0].snippet.thumbnails.medium.url;
 
 			var songTitle = document.createElement('p');
@@ -72,10 +72,14 @@ var playlistView = {
 			var likeBtn = document.createElement('button')
 			likeBtn.className = "like-btn"
 
+			var playBtn = playlistView.renderPlayBtn();
+
 			songContainer.append(songTitle);
 			songContainer.append(thumbnail);
 			songContainer.append(likeBtn);
+			songContainer.append(playBtn);
 
+			playlistView.bindPlayBtn(songId);
 			playlistView.loadLikeFeatures(songId, likes)
 		});
 
@@ -174,7 +178,26 @@ var playlistView = {
 				});
 			}
 		}(songId));
-	}
+	},
+
+	renderPlayBtn: function() {
+		var playBtn = document.createElement('button')
+		playBtn.className = 'play-btn fa'
+		playBtn.innerHTML = "&#xf144"
+		return playBtn;
+	},
+
+	bindPlayBtn: function(songId) {
+		$('#' + songId + ' .play-btn').click(function(songId){
+			return function() {
+				$.post("/change_current_song/", {
+					yt_id: songId
+				}, function() {
+					playlistView.player.loadVideoById(songId);
+				})
+			}
+		}(songId));
+	},
 }
 
 playlistView.init();

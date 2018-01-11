@@ -52,7 +52,7 @@ def homepage():
 				session['collaborator'] = collaborator
 				session['admin'] = False
 				session['logged_in'] = True
-				if is_pid_exist[1] == collaborator:
+				if playlist[1] == collaborator:
 					session['admin'] = True
 				return redirect(url_for('playlist'))
 	except Exception as e:
@@ -137,6 +137,21 @@ def get_next_song():
 		conn.close()
 		return jsonify(playlist_songs[index])
 
+@app.route('/change_current_song/', methods=['POST'])
+def change_current_song():
+	if request.method == 'POST':
+		c, conn = connection()
+		collaborator = session['collaborator']
+		yt_id = request.form['yt_id']
+		pid = session['pid']
+		playlist = GET_all_songs_request_sorted(c, conn, pid)
+		index = -1
+		for song in playlist:
+			index += 1
+			if song[1] == yt_id: break
+		UPDATE_collaborator_index_request(c, conn, pid, collaborator, index)
+		conn.close()
+
 @app.route('/get_all_songs/', methods=['GET'])
 def get_all_songs():
 	if request.method == 'GET':
@@ -147,8 +162,8 @@ def get_all_songs():
 
 @app.route('/is_liked/', methods=['POST'])
 def is_liked():
-	c, conn = connection()
 	if request.method == 'POST':
+		c, conn = connection()
 		pid = session['pid']
 		collaborator = session['collaborator']
 		yt_id = bleach.clean(request.form['yt_id'])
@@ -161,8 +176,8 @@ def is_liked():
 
 @app.route('/liked/', methods=['POST'])
 def liked():
-	c, conn = connection()
 	if request.method == 'POST':
+		c, conn = connection()
 		pid = session['pid']
 		collaborator = session['collaborator']
 		yt_id = bleach.clean(request.form['yt_id'])
@@ -178,8 +193,8 @@ def liked():
 
 @app.route('/unliked/', methods=['POST'])
 def unliked():
-	c, conn = connection()
 	if request.method == 'POST':
+		c, conn = connection()
 		pid = session['pid']
 		collaborator = session['collaborator']
 		yt_id = bleach.clean(request.form['yt_id'])
