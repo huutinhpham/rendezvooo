@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request, flash, session, jsonify
 from passlib.hash import pbkdf2_sha256
+from functools import wraps
 
 from dbconnect import *
 from my_util import *
@@ -8,9 +9,21 @@ import bleach, random, string
 
 app = Flask(__name__)
 
-@app.route('/test/')
-def test():
-	return "test homie"
+def login_required(f):
+	@wraps(f)
+	def wrap(*args, **kwargs):
+		if 'logged_in' in session:
+			return f(*args, **kwargs)
+		else:
+			flash("Please enter a playlist first")
+			return redirect(url_for('homepage'))
+	return wrap
+
+@app.route('/logout/')
+@login_required
+def logout():
+	session.clear()
+	return redirect(url_for('homepage'))
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -55,6 +68,7 @@ def homepage():
 				if playlist[1] == collaborator:
 					session['admin'] = True
 				return redirect(url_for('playlist'))
+			return render_template("homepage.html", error=error, form=form)
 	except Exception as e:
 		flash(e)
 
@@ -88,6 +102,7 @@ def generate_playlist():
 	return render_template("generate-playlist.html", form=form)
 
 @app.route('/playlist/', methods=['GET', 'POST'])
+@login_required
 def playlist():
 	try:
 		c, conn = connection()
@@ -109,6 +124,7 @@ def playlist():
 	return render_template("playlist.html", pid=session['pid'])
 
 @app.route('/get_current_song/', methods=['GET'])
+@login_required
 def get_current_song():
 	if request.method == 'GET':
 		pid = session['pid']
@@ -120,6 +136,7 @@ def get_current_song():
 		return jsonify(playlist_songs[index])
 
 @app.route('/get_next_song/', methods=['GET'])
+@login_required
 def get_next_song():
 	if request.method == 'GET':
 		pid = session['pid']
@@ -138,6 +155,7 @@ def get_next_song():
 		return jsonify(playlist_songs[index])
 
 @app.route('/change_current_song/', methods=['POST'])
+@login_required
 def change_current_song():
 	if request.method == 'POST':
 		c, conn = connection()
@@ -153,6 +171,7 @@ def change_current_song():
 		conn.close()
 
 @app.route('/get_all_songs/', methods=['GET'])
+@login_required
 def get_all_songs():
 	if request.method == 'GET':
 		c, conn = connection()
@@ -161,6 +180,7 @@ def get_all_songs():
 		return jsonify(playlist_songs)
 
 @app.route('/is_liked/', methods=['POST'])
+@login_required
 def is_liked():
 	if request.method == 'POST':
 		c, conn = connection()
@@ -175,6 +195,7 @@ def is_liked():
 
 
 @app.route('/liked/', methods=['POST'])
+@login_required
 def liked():
 	if request.method == 'POST':
 		c, conn = connection()
@@ -192,6 +213,7 @@ def liked():
 		return jsonify(likes)
 
 @app.route('/unliked/', methods=['POST'])
+@login_required
 def unliked():
 	if request.method == 'POST':
 		c, conn = connection()
