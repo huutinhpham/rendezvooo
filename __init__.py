@@ -110,12 +110,13 @@ def playlist():
 
 			yt_id = bleach.clean(request.form['yt_id'])
 			pid = session['pid']
+			collaborator = session['collaborator']
 
 			is_pid_exist = GET_playlist_request(c, conn, pid)
 			is_song_exist = GET_song_request(c, conn, pid, yt_id)
 			error = validate_song_request(is_pid_exist, is_song_exist, yt_id)
 			if error is None: 
-				POST_song_request(c, conn, pid, yt_id, 0)
+				POST_song_request(c, conn, pid, yt_id, collaborator, 0)
 				error = 'your song request has been added'
 			return jsonify(error=error)
 		conn.close()

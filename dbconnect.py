@@ -17,8 +17,8 @@ def GET_all_songs_request_sorted(c, conn, pid):
 	c.execute("SELECT * FROM song WHERE pid=(%s) ORDER BY vote DESC", (pid,))
 	return c.fetchall()
 
-def POST_song_request(c, conn, pid, yt_id, vote):
-	c.execute("INSERT INTO song (pid, yt_id, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
+def POST_song_request(c, conn, pid, yt_id, requester, vote):
+	c.execute("INSERT INTO song (pid, yt_id, requester, vote) VALUES (%s, %s, %s, %s)", (pid, yt_id, requester, vote))
 	conn.commit()
 
 def UPDATE_song_likes_request(c, conn, pid, yt_id, like):

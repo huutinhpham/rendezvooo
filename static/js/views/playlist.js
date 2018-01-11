@@ -44,7 +44,7 @@ var playlistView = {
 			var playlistContainer = document.createElement('div');
 			playlistContainer.id = 'playlist-container';
 			for (var i = 0; i < songs.length; i++) {
-				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2]);
+				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3]);
 				playlistContainer.append(songView);
 			}
 
@@ -53,7 +53,7 @@ var playlistView = {
 		})
 	},
 
-	renderSongThumbnail: function(songId, likes) {
+	renderSongThumbnail: function(songId, likes, requester) {
 		var key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
 		var songContainer = document.createElement('div');
 		songContainer.className = 'song-container';
@@ -65,25 +65,43 @@ var playlistView = {
 			thumbnail.className = 'thumbnail';
 			thumbnail.src = data.items[0].snippet.thumbnails.medium.url;
 
-			var songTitle = document.createElement('p');
-			songTitle.className='song-title';
-			songTitle.innerHTML = data.items[0].snippet.title;
+			var title = data.items[0].snippet.title;
 
-			var likeBtn = document.createElement('button')
-			likeBtn.className = "like-btn"
+			var descriptionContainer = playlistView.renderSongDescription(songId, likes, title, requester)
 
-			var playBtn = playlistView.renderPlayBtn();
-
-			songContainer.append(songTitle);
 			songContainer.append(thumbnail);
-			songContainer.append(likeBtn);
-			songContainer.append(playBtn);
+			songContainer.append(descriptionContainer);
 
 			playlistView.bindPlayBtn(songId);
 			playlistView.loadLikeFeatures(songId, likes)
 		});
 
 		return songContainer;
+	},
+
+	renderSongDescription: function(songId, likes, title, requester) {
+		var descriptionContainer=document.createElement('div')
+		descriptionContainer.className='description-container'
+
+		var songTitle = document.createElement('p');
+		songTitle.className='song-title';
+		songTitle.innerHTML = title;
+
+		var requesterElm = document.createElement('p')
+		requesterElm.className='requester'
+		requesterElm.innerHTML="Requested By: " + requester
+
+		var likeBtn = document.createElement('button')
+		likeBtn.className = "like-btn"
+
+		var playBtn = playlistView.renderPlayBtn();
+
+		descriptionContainer.append(songTitle);
+		descriptionContainer.append(requesterElm);
+		descriptionContainer.append(likeBtn);
+		descriptionContainer.append(playBtn);
+
+		return descriptionContainer;
 	},
 
 	bindLikeFeatures: function(songId) {
