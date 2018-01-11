@@ -72,6 +72,7 @@ def generate_playlist():
 			session['pid'] = pid
 			session['admin'] = False
 
+
 			return redirect(url_for('playlist'))
 
 	except Exception as e:
@@ -136,6 +137,19 @@ def get_all_songs():
 		conn.close()
 		return jsonify(playlist_songs)
 
+@app.route('/is_liked/', methods=['POST'])
+def is_liked():
+	c, conn = connection()
+	if request.method == 'POST':
+		pid = session['pid']
+		collaborator = session['collaborator']
+		yt_id = bleach.clean(request.form['yt_id'])
+		is_like_exist = GET_like_request(c, conn, pid, yt_id, collaborator)
+		conn.close()
+		if is_like_exist is None:
+			return jsonify(False)
+		return jsonify(True)
+
 
 @app.route('/liked/', methods=['POST'])
 def liked():
@@ -147,11 +161,30 @@ def liked():
 
 		is_like_exist = GET_like_request(c, conn, pid, yt_id, collaborator)
 		if is_like_exist is None:
-			UPDATE_song_likes_request(c, conn, pid, yt_id)
+			UPDATE_song_likes_request(c, conn, pid, yt_id, 1)
 			POST_like_request(c, conn, pid, yt_id, collaborator)
-			return jsonify(response='success')
+
+		likes = GET_song_request(c, conn, pid, yt_id)[2]
 		conn.close()
-		return jsonify(response='fail')
+		return jsonify(likes)
+
+@app.route('/unliked/', methods=['POST'])
+def unliked():
+	c, conn = connection()
+	if request.method == 'POST':
+		pid = session['pid']
+		collaborator = session['collaborator']
+		yt_id = bleach.clean(request.form['yt_id'])
+
+		is_like_exist = GET_like_request(c, conn, pid, yt_id, collaborator)
+		if is_like_exist is not None:
+			UPDATE_song_likes_request(c, conn, pid, yt_id, 0)
+			DELETE_like_request(c, conn, pid, yt_id, collaborator)
+
+		likes = GET_song_request(c, conn, pid, yt_id)[2]
+		conn.close()
+		return jsonify(likes)
+
 
 @app.errorhandler(500)
 def internal_server_error(e):

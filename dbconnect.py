@@ -21,8 +21,11 @@ def POST_song_request(c, conn, pid, yt_id, vote):
 	c.execute("INSERT INTO song (pid, yt_id, vote) VALUES (%s, %s, %s)", (pid, yt_id, vote))
 	conn.commit()
 
-def UPDATE_song_likes_request(c, conn, pid, yt_id):
-	c.execute("UPDATE song SET vote = vote + 1 WHERE pid=(%s) AND yt_id=(%s)", (pid, yt_id))
+def UPDATE_song_likes_request(c, conn, pid, yt_id, like):
+	if (like):
+		c.execute("UPDATE song SET vote = vote + 1 WHERE pid=(%s) AND yt_id=(%s)", (pid, yt_id))
+	else:
+		c.execute("UPDATE song SET vote = vote - 1 WHERE pid=(%s) AND yt_id=(%s)", (pid, yt_id))
 	conn.commit()
 
 def GET_playlist_request(c, conn, pid):
@@ -51,4 +54,8 @@ def GET_like_request(c, conn, pid, yt_id, collaborator):
 
 def POST_like_request(c, conn, pid, yt_id, collaborator):
 	c.execute("INSERT INTO vote (pid, yt_id, collaborator) VALUES (%s, %s, %s)", (pid, yt_id, collaborator))
+	conn.commit()
+
+def DELETE_like_request(c, conn, pid, yt_id, collaborator):
+	c.execute("DELETE FROM vote WHERE pid=(%s) AND yt_id=(%s) AND collaborator=(%s)", (pid, yt_id, collaborator))
 	conn.commit()

@@ -9,7 +9,6 @@ var playlistView = {
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
 			var ytId = controller.parseYTurl($('#request-url').val());
-			console.log(ytId);
 			$.post("/playlist/", {
 			    yt_id: ytId
 			}, function(data) {
@@ -70,30 +69,66 @@ var playlistView = {
 			songTitle.className='song-title';
 			songTitle.innerHTML = data.items[0].snippet.title;
 
-			var likeBtn = playlistView.renderLikeBtn(songId, likes)
+			var likeBtn = document.createElement('button')
+			likeBtn.className = "like-btn"
 
 			songContainer.append(songTitle);
 			songContainer.append(thumbnail);
 			songContainer.append(likeBtn);
-			playlistView.bindLikeBtn(songId);
 
-			playlistView.bindThumbnail(songId);
+			playlistView.loadLikeFeatures(songId, likes)
 		});
 
 		return songContainer;
 	},
 
-	bindThumbnail: function(songId) {
-		$('#' + songId + ' img').dblclick(function(songId){
+	bindLikeFeatures: function(songId) {
+		this.bindLikeThumbnail(songId);
+		this.bindLikeBtn(songId);
+	},
+
+	bindUnlikeFeatures: function(songId) {
+		this.bindUnlikeThumbnail(songId)
+		this.bindUnlikeBtn(songId);
+	},
+
+
+	loadLikeFeatures: function(songId, likes) {
+		$.post('/is_liked/', {
+			yt_id: songId
+		}, function(is_liked) {
+			if (is_liked != true) {
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes))
+				playlistView.bindLikeFeatures(songId)
+			} else {
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes))
+				playlistView.bindUnlikeFeatures(songId)
+			}
+		})
+	},
+
+	bindLikeThumbnail: function(songId) {
+		console.log(songId)
+		$('#' + songId + ' .thumbnail').unbind().dblclick(function(songId){
 			return function() {
 				$.post("/liked/", {
 					yt_id: songId
-				}, function(data) {
-					console.log(data.response == 'success')
-					if (data.response == 'success') {
-						console.log('hello')
-						$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn("&#x2764", 5))
-					}
+				}, function(likes) {
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes));
+					playlistView.bindUnlikeFeatures(songId);
+				});
+			}
+		}(songId));
+	},
+
+	bindUnlikeThumbnail: function(songId) {
+		$('#' + songId + ' .thumbnail').unbind().dblclick(function(songId){
+			return function() {
+				$.post("/unliked/", {
+					yt_id: songId
+				}, function(likes) {
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes));
+					playlistView.bindLikeFeatures(songId);
 				});
 			}
 		}(songId));
@@ -107,30 +142,37 @@ var playlistView = {
 		return likeBtn;
 	},
 
-
-	bindLikeBtn: function(songId) {
-		$('#' + songId + ' .like-btn').click(function(songId){
-			return function() {
-				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, 4))
-				playlistView.bindUnlikeBtn(songId);
-			}
-		}(songId));
-	},
-
 	renderUnlikeBtn: function(songId, likes) {
 		var likeBtn = document.createElement('button');
 		likeBtn.className = "like-btn"
 		likeBtn.innerHTML = "&#x2764" + " " + likes;
 
-		playlistView.bindUnlikeBtn(songId)
 		return likeBtn;
+	},
+
+
+	bindLikeBtn: function(songId) {
+		$('#' + songId + ' .like-btn').click(function(songId){
+			return function() {
+				$.post("/liked/", {
+					yt_id: songId
+				}, function(likes) {
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes));
+					playlistView.bindUnlikeFeatures(songId);
+				});
+			}
+		}(songId));
 	},
 
 	bindUnlikeBtn: function(songId) {
 		$('#' + songId + ' .like-btn').click(function(songId){
 			return function() {
-				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, 3))
-				playlistView.bindLikeBtn(songId)
+				$.post("/unliked/", {
+					yt_id: songId
+				}, function(likes) {
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes));
+					playlistView.bindLikeFeatures(songId)
+				});
 			}
 		}(songId));
 	}
