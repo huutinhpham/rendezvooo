@@ -45,12 +45,13 @@ def check_opt_pw(opt_pw):
 
 
 class AccessPlaylistForm(Form):
-	name = TextField('Name')
+	name = TextField('Name', [validators.Length(min=3, max=25)])
 	pid = TextField('Playlist Code')
 	opt_pw = PasswordField('Password (Optional)')
 
 
 class GeneratePlaylistForm(Form):
+	name = TextField('Name', [validators.Length(min=3, max=25)])
 	email = EmailField('Email Address', [validators.DataRequired(), validators.Email()])
 	password = PasswordField('New Playlist Password', [
 		validators.Required(), 

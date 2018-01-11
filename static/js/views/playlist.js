@@ -27,7 +27,7 @@ var playlistView = {
 	loadCurrentSong: function(event) {
 		$.get("/get_current_song/", function(song){
 			event.target.cueVideoById(song[1]);
-		})    
+		}) 
 	},
 
 	playNextSong: function(event) {
@@ -108,7 +108,6 @@ var playlistView = {
 	},
 
 	bindLikeThumbnail: function(songId) {
-		console.log(songId)
 		$('#' + songId + ' .thumbnail').unbind().dblclick(function(songId){
 			return function() {
 				$.post("/liked/", {

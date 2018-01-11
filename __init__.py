@@ -27,13 +27,14 @@ def homepage():
 			c, conn = connection()
 
 			### VERIFY IF PLAYLIST EXISTS ###
+			playlist = None
 			playlist_error = None
 			if len(pid) != 8:
 				error = "Playlist Code should have exactly 8 characters."
 				return render_template("homepage.html", error=error, form=form)
 			else:
-				is_pid_exist = GET_playlist_request(c, conn, pid)
-				playlist_error = validate_playlist_request(is_pid_exist)
+				playlist = GET_playlist_request(c, conn, pid)
+				playlist_error = validate_playlist_request(playlist)
 
 			### VERIFY USER IF USER IS NOT NEW ###
 			is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
@@ -50,6 +51,9 @@ def homepage():
 				session['pid'] = pid
 				session['collaborator'] = collaborator
 				session['admin'] = False
+				session['logged_in'] = True
+				if is_pid_exist[1] == collaborator:
+					session['admin'] = True
 				return redirect(url_for('playlist'))
 	except Exception as e:
 		flash(e)
@@ -61,16 +65,20 @@ def generate_playlist():
 	try:
 		form = GeneratePlaylistForm(request.form)	
 		if request.method == "POST" and form.validate():
+			collaborator = bleach.clean(form.name.data)
 			email = bleach.clean(form.email.data)
-			playlist_pw = pbkdf2_sha256.encrypt((str(form.password.data)))
+			encrypted_pw = pbkdf2_sha256.encrypt((str(form.password.data)))
 
 			c, conn = connection()
 			pid = generate_pid(c, conn, 8)
-			POST_playlist_request(c, conn, pid, playlist_pw, email, False)
+			POST_playlist_request(c, conn, pid, collaborator, email, False)
+			POST_collaborator_request(c, conn, pid, collaborator, encrypted_pw, 0)
 			conn.close()
 
+			session['logged_in'] = True
 			session['pid'] = pid
-			session['admin'] = False
+			session['admin'] = True
+			session['collaborator'] = collaborator
 
 
 			return redirect(url_for('playlist'))

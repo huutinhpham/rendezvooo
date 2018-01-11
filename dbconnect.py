@@ -32,8 +32,8 @@ def GET_playlist_request(c, conn, pid):
 	c.execute("SELECT * FROM playlist WHERE pid=(%s)", (pid,))
 	return c.fetchone()
 
-def POST_playlist_request(c, conn, pid, playlist_pw, email, dirty):
-	c.execute("INSERT INTO playlist (pid, playlist_pw, email, dirty) VALUES (%s, %s, %s, %s)", (pid, playlist_pw, email, dirty))
+def POST_playlist_request(c, conn, pid, admin_name, email, dirty):
+	c.execute("INSERT INTO playlist (pid, admin_name, email, dirty) VALUES (%s, %s, %s, %s)", (pid, admin_name, email, dirty))
 	conn.commit()
 
 def GET_collaborator_request(c, conn, pid, collaborator):
