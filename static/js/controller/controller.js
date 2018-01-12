@@ -1,31 +1,26 @@
 var controller = {
 
 	init: function() {
-
+		this.youtube_key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
 	},
 
-	getAppName: function() {
-		return model.appName;
-	},
+	getYtKey: function() {
+		return this.youtube_key;
+	}, 
 
-	getSongs: function() {
-		return $.ajax({
-			type: 'GET',
-			url: "/_get_all_songs/", 
-			async: false
-		}).responseText;
-	},
-
-	getTopSong: function() {
-		return this.getPlaylist()[2].url;
-	},
-
-	removeTopSong: function() {
-
-	},
-
-	generatePid: function() {
-
+	postRequest: function(ytId) {
+		var key = this.getYtKey();
+		$.getJSON("https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id="+ytId+"&key="+key, function(data){
+			if (!data.items[0].contentDetails.licensedContent) {
+				$.post("/playlist/", {
+			    	yt_id: ytId
+				}, function(data) {
+					$('.request-feedback').html(data.error);
+				})
+			} else {
+				$('.request-feedback').html("That video has copyright issues, please try a different link.")
+			}
+		})
 	},
 
 	parseYTurl: function(url) {

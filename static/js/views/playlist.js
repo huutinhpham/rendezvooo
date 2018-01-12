@@ -10,12 +10,7 @@ var playlistView = {
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
 			var ytId = controller.parseYTurl($('#request-url').val());
-			$.post("/playlist/", {
-			    yt_id: ytId
-			}, function(data) {
-				$('.request-feedback').html(data.error);
-				//render and bind thumbnail if success
-			})
+			controller.postRequest(ytId);
 		});
 	},
 	
@@ -54,7 +49,7 @@ var playlistView = {
 	},
 
 	renderSongThumbnail: function(songId, likes, requester) {
-		var key = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M'
+		var key = controller.getYtKey();
 		var songContainer = document.createElement('div');
 		songContainer.className = 'song-container';
 		songContainer.id = songId
@@ -65,9 +60,9 @@ var playlistView = {
 			thumbnail.className = 'thumbnail';
 			thumbnail.src = data.items[0].snippet.thumbnails.medium.url;
 
-			var title = data.items[0].snippet.title;
+			var songInfo= data.items[0].snippet;
 
-			var descriptionContainer = playlistView.renderSongDescription(songId, likes, title, requester)
+			var descriptionContainer = playlistView.renderSongDescription(songId, likes, songInfo, requester)
 
 			songContainer.append(thumbnail);
 			songContainer.append(descriptionContainer);
@@ -79,30 +74,51 @@ var playlistView = {
 		return songContainer;
 	},
 
-	renderSongDescription: function(songId, likes, title, requester) {
+	renderSongDescription: function(songId, likes, songInfo, requester) {
 		var descriptionContainer=document.createElement('div')
 		descriptionContainer.className='description-container'
 
 		var songTitle = document.createElement('p');
 		songTitle.className='song-title';
-		songTitle.innerHTML = title;
+		songTitle.innerHTML = songInfo.title;
 
 		var requesterElm = document.createElement('p')
 		requesterElm.className='requester'
 		requesterElm.innerHTML="Requested By: " + requester
 
+		var channelElm = this.renderChannelInfo(songInfo.channelTitle)
+		var publishElm = this.renderPublishDate(songInfo.publishedAt)
+
 		var likeBtn = document.createElement('button')
 		likeBtn.className = "like-btn"
 
-		var playBtn = playlistView.renderPlayBtn();
+		var playBtn = this.renderPlayBtn();
 
 		descriptionContainer.append(songTitle);
 		descriptionContainer.append(requesterElm);
+		descriptionContainer.append(channelElm);
+		descriptionContainer.append(publishElm);
 		descriptionContainer.append(likeBtn);
 		descriptionContainer.append(playBtn);
 
 		return descriptionContainer;
 	},
+
+	renderChannelInfo: function(channelTitle){
+		var channelElm = document.createElement('p')
+		channelElm.className="info-button"
+		channelElm.innerHTML = 'From: ' + channelTitle
+		return channelElm
+	},
+
+	renderPublishDate: function(date){
+		var publishElm = document.createElement('p')
+		var date = new Date(date).toDateString()
+		publishElm.className="info-button"
+		publishElm.innerHTML = 'Published On ' + date
+		return publishElm
+	},
+
 
 	bindLikeFeatures: function(songId) {
 		this.bindLikeThumbnail(songId);
