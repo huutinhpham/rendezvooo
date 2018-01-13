@@ -1,36 +1,24 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Rendezvooo</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
+{% extends "layout.html" %}
     
-    <body>
-		{% if error %}
-            <p class="error"><strong>Error:</strong>{{error}}</p>
-        {% endif %}
+{% block content %}
+	{% if error %}
+        <p class="error"><strong>Error:</strong>{{error}}</p>
+    {% endif %}
 
         
-        <h4>Login to Playlist:</h4>
-        <br>
-        {% from "_formhelper.html" import render_field %}
-        <form method="POST" action="/">
-            <dl>
-                {{ render_field(form.name) }}
-                {{ render_field(form.pid) }}
-                {{ render_field(form.opt_pw) }}
-            </dl>
-            <p><input type="submit" value="Enter Playlist"></p>
-        </form>
-
-        <button id="new-playlist-btn">Create New Playlist</button>
+    <h4>Login to Playlist:</h4>
+    <br>
+    {% from "_formhelper.html" import render_field %}
+    <form method="POST" action="/">
+        <dl>
+            {{ render_field(form.name) }}
+            {{ render_field(form.pid) }}
+            {{ render_field(form.opt_pw) }}
+         </dl>
+        <p><input type="submit" value="Enter Playlist"></p>
+    </form>
+    <button id="new-playlist-btn">Create New Playlist</button>
         
-        <script>var response = '{{ response }}'</script>
-    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="../static/js/model.js"></script>
-    	<script src="../static/js/controller/controller.js"></script>
-        <script src="../static/js/views/homepage.js"></script>
-    </body>
-</html>
+    <script>var response = '{{ response }}'</script>
+    <script src="../static/js/views/homepage.js"></script>
+{% endblock %}

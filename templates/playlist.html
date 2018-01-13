@@ -1,25 +1,11 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Rendezvooo</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    </head>
+{% extends "layout.html" %}
     
-    <body>
-        <p>This playlist code is: {{ pid }}, send it to your friends to collaborate!</p>
-        <p class="request-feedback"></p>
-        <h4>Request Song:</h4>
-<!--         <div>
-            <input id ="request-url" type="text" placeholder="YouTube URL" value="{{ request.form.yt_id }}">
-            <button id="request-btn" value="Submit URL">SUBMIT URL</button>
-        </div> -->
-    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="../static/js/model.js"></script>
-        <script src="../static/js/controller/controller.js"></script>
-        <script src="../static/js/views/playlist.js"></script>
-        <script src="../static/js/controller/yt-controller.js"></script>
-    </body>
-</html>
+{% block content %}
+
+    <p>This playlist code is: {{ pid }}, send it to your friends to collaborate!</p>
+    <p class="request-feedback"></p>
+    <h4>Request Song:</h4>
+    <script src="../static/js/views/playlist.js"></script>
+    <script src="../static/js/controller/yt-controller.js"></script>
+
+{% endblock %}
