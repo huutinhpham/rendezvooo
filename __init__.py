@@ -55,7 +55,7 @@ def homepage():
 			if is_name_exist != None:
 				collaborator_error = validate_name_request(collaborator, is_name_exist[2], form.opt_pw.data)
 			else:
-				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, 0)
+				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, None)
 
 			error = playlist_error or collaborator_error
 			conn.close()
@@ -86,7 +86,7 @@ def generate_playlist():
 			c, conn = connection()
 			pid = generate_pid(c, conn, 8)
 			POST_playlist_request(c, conn, pid, collaborator, email, False)
-			POST_collaborator_request(c, conn, pid, collaborator, encrypted_pw, 0)
+			POST_collaborator_request(c, conn, pid, collaborator, encrypted_pw, None)
 			conn.close()
 
 			session['logged_in'] = True
@@ -124,36 +124,45 @@ def playlist():
 		flash(e)
 	return render_template("playlist.html", pid=session['pid'])
 
-@app.route('/get_current_song/', methods=['GET'])
+@app.route('/load_first_song/', methods=['GET'])
 @login_required
-def get_current_song():
+def load_first_song():
 	if request.method == 'GET':
 		pid = session['pid']
 		collaborator = session['collaborator']
 		c, conn = connection()
-		index = GET_collaborator_request(c, conn, pid, collaborator)[3]
-		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+		song = GET_collaborator_request(c, conn, pid, collaborator)[3]
+
+		#initial request, where collaborator has no current song
+		if song is None:
+			playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+			if playlist_songs is not None:
+				song = playlist_songs[0][1]
+				UPDATE_collaborator_song_request(c, conn, pid, collaborator, song)
 		conn.close()
-		return jsonify(playlist_songs[index])
+		return jsonify(song)
 
-@app.route('/get_next_song/', methods=['GET'])
+@app.route('/next_song/', methods=['GET'])
 @login_required
-def get_next_song():
+def next_song():
 	if request.method == 'GET':
 		pid = session['pid']
 		collaborator = session['collaborator']
 
 		c, conn = connection()
-		index = GET_collaborator_request(c, conn, pid, collaborator)[3] + 1
+		curr_song = GET_collaborator_request(c, conn, pid, collaborator)[3]
 		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
 
+		index = 0;
+		for song in playlist_songs:
+			if song[1] == curr_song:
+				index += 1
 		if index >= len(playlist_songs):
 			index = 0
 
-		UPDATE_collaborator_index_request(c, conn, pid, collaborator, index)
-
+		UPDATE_collaborator_song_request(c, conn, pid, collaborator, playlist_songs[index][1])
 		conn.close()
-		return jsonify(playlist_songs[index])
+		return jsonify(playlist_songs[index][1])
 
 @app.route('/change_current_song/', methods=['POST'])
 @login_required
@@ -163,12 +172,8 @@ def change_current_song():
 		collaborator = session['collaborator']
 		yt_id = request.form['yt_id']
 		pid = session['pid']
-		playlist = GET_all_songs_request_sorted(c, conn, pid)
-		index = -1
-		for song in playlist:
-			index += 1
-			if song[1] == yt_id: break
-		UPDATE_collaborator_index_request(c, conn, pid, collaborator, index)
+
+		UPDATE_collaborator_song_request(c, conn, pid, collaborator, yt_id)
 		conn.close()
 
 @app.route('/get_all_songs/', methods=['GET'])
@@ -179,6 +184,16 @@ def get_all_songs():
 		playlist_songs = GET_all_songs_request_sorted(c, conn, session['pid'])
 		conn.close()
 		return jsonify(playlist_songs)
+
+@app.route('/delete_song/', methods=['POST'])
+@login_required
+def delete_song():
+	if request.method == 'POST':
+		c, conn = connection()
+		yt_id = request.form['yt_id']
+		pid = session['pid']
+		DELETE_song_request(c, conn, pid, yt_id);
+		conn.close()
 
 @app.route('/is_liked/', methods=['POST'])
 @login_required

@@ -1,16 +1,67 @@
 var playlistView = {
 
 	init: function() {
+		this.renderRequestBar();
 		this.renderPlayer();
 		this.renderPlaylist();
 		this.bindRequestBtn();
-		this.player = player;
+		this.requestValidator;
+		this.player;
+	},
+
+	renderRequestBar: function() {
+		var requestBar = document.createElement('div');
+		requestBar.id = 'request-bar'
+
+		var previewElm = document.createElement('requestValidator');
+		previewElm.id = 'requestValidator';
+
+		requestForm = this.renderInputForm()
+
+		requestBar.append(previewElm);
+		requestBar.append(requestForm);
+		$('body').append(requestBar);
+	},
+
+	renderInputForm: function() {
+		var requestFormDiv = document.createElement('div');
+		var requestInput = document.createElement('input');
+		requestInput.id = 'request-input'
+		requestInput.type = "text"
+		requestInput.placeholder = "YouTube Url Here";
+
+		var requestBtn = document.createElement('button');
+		requestBtn.id = 'request-btn'
+		requestBtn.innerHTML = 'Submit Url'
+
+		requestFormDiv.append(requestInput);
+		requestFormDiv.append(requestBtn);
+
+		return requestFormDiv;
+
+	},
+
+	loadValidator: function(event) {
+		event.target.mute();
+	},
+
+	validateRequest: function(songId) {
+		this.requestValidator.loadVideoById(songId);
+		this.requestValidator.pauseVideo();
+	},
+
+	onRequestError: function(event) {
+		console.log(event.data);
+		if (event.data == 150 || event.data == 101) {
+			controller.invalidSongRequest(controller.parseYTurl($('#request-input').val()))
+		}
 	},
 
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
-			var ytId = controller.parseYTurl($('#request-url').val());
-			controller.postRequest(ytId);
+			var ytId = controller.parseYTurl($('#request-input').val());
+			playlistView.validateRequest(ytId);
+			controller.postSongRequest(ytId);
 		});
 	},
 	
@@ -21,15 +72,16 @@ var playlistView = {
 	},
 
 	loadCurrentSong: function(event) {
-		$.get("/get_current_song/", function(song){
-			event.target.cueVideoById(song[1]);
+		$.get("/load_first_song/", function(song){
+			event.target.cueVideoById(song);
 		}) 
 	},
 
 	playNextSong: function(event) {
 		if(event.data === 0) {
-			$.get("/get_next_song/", function(song){
-				event.target.loadVideoById(song[1]);
+			$.get("/next_song/", function(song){
+				console.log(song)
+				event.target.loadVideoById(song);
 			})    
     	}
 	},

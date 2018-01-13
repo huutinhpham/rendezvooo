@@ -9,7 +9,19 @@ function onYouTubeIframeAPIReady() {
 	playlistView.player = new YT.Player('player', {
        	events: {
        	  'onReady': playlistView.loadCurrentSong,
-       	  'onStateChange': playlistView.playNextSong
+       	  'onStateChange': playlistView.playNextSong,
+       	}
+   	});
+
+
+	var DOMpreview = document.getElementById('requestValidator')
+	playlistView.requestValidator = new YT.Player('requestValidator', {
+		height: 0.001,
+		width: 0.001,
+		playerVars: { 'autoplay': 1, 'controls': 0, 'showinfo':0, 'autohide': 1 },
+       	events: {
+       	  'onReady': playlistView.loadValidator,
+       	  'onError': playlistView.onRequestError
        	}
    	});
 }

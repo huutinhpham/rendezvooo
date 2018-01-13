@@ -21,6 +21,10 @@ def POST_song_request(c, conn, pid, yt_id, requester, vote):
 	c.execute("INSERT INTO song (pid, yt_id, requester, vote) VALUES (%s, %s, %s, %s)", (pid, yt_id, requester, vote))
 	conn.commit()
 
+def DELETE_song_request(c, conn, pid, yt_id):
+	c.execute("DELETE FROM song WHERE pid=(%s) AND yt_id=(%s)", (pid, yt_id))
+	conn.commit()
+
 def UPDATE_song_likes_request(c, conn, pid, yt_id, like):
 	if (like):
 		c.execute("UPDATE song SET vote = vote + 1 WHERE pid=(%s) AND yt_id=(%s)", (pid, yt_id))
@@ -40,12 +44,12 @@ def GET_collaborator_request(c, conn, pid, collaborator):
 	c.execute("SELECT * FROM collaborator WHERE pid=(%s) AND collaborator=(%s)", (pid, collaborator))
 	return c.fetchone()
 
-def POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, song_index):
-	c.execute("INSERT INTO collaborator (pid, collaborator, encrypted_opt_pw, song_index) VALUES (%s, %s, %s, %s)", (pid, collaborator, encrypted_opt_pw, song_index))
+def POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, current_song):
+	c.execute("INSERT INTO collaborator (pid, collaborator, encrypted_opt_pw, current_song) VALUES (%s, %s, %s, %s)", (pid, collaborator, encrypted_opt_pw, current_song))
 	conn.commit()
 
-def UPDATE_collaborator_index_request(c, conn, pid, collaborator, song_index):
-	c.execute("UPDATE collaborator SET song_index=(%s) WHERE pid=(%s) AND collaborator=(%s)", (song_index, pid, collaborator))
+def UPDATE_collaborator_song_request(c, conn, pid, collaborator, current_song):
+	c.execute("UPDATE collaborator SET current_song=(%s) WHERE pid=(%s) AND collaborator=(%s)", (current_song, pid, collaborator))
 	conn.commit()
 
 def GET_like_request(c, conn, pid, yt_id, collaborator):

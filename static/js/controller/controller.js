@@ -8,19 +8,19 @@ var controller = {
 		return this.youtube_key;
 	}, 
 
-	postRequest: function(ytId) {
-		var key = this.getYtKey();
-		$.getJSON("https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id="+ytId+"&key="+key, function(data){
-			if (!data.items[0].contentDetails.licensedContent) {
-				$.post("/playlist/", {
-			    	yt_id: ytId
-				}, function(data) {
-					$('.request-feedback').html(data.error);
-				})
-			} else {
-				$('.request-feedback').html("That video has copyright issues, please try a different link.")
-			}
+	postSongRequest: function(ytId) {
+		$.post("/playlist/", {
+			yt_id: ytId
+		}, function(data) {
+			$('.request-feedback').html(data.error);
 		})
+	},
+
+	invalidSongRequest: function(ytId) {
+		$.post('/delete_song/', {
+			yt_id: ytId
+		})
+		$('.request-feedback').html("That video has copyright issues, please try a different link.")
 	},
 
 	parseYTurl: function(url) {
