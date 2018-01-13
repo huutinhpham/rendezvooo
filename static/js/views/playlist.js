@@ -278,8 +278,8 @@ var playlistView = {
 			return function() {
 				$.post("/change_current_song/", {
 					yt_id: songId
-				}, function() {
-					playlistView.player.loadVideoById(songId);
+				}, function(data) {
+					playlistView.player.loadVideoById(data);
 				})
 			}
 		}(songId));

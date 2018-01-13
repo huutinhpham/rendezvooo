@@ -155,8 +155,9 @@ def next_song():
 
 		index = 0;
 		for song in playlist_songs:
+			index += 1
 			if song[1] == curr_song:
-				index += 1
+				break
 		if index >= len(playlist_songs):
 			index = 0
 
@@ -175,6 +176,7 @@ def change_current_song():
 
 		UPDATE_collaborator_song_request(c, conn, pid, collaborator, yt_id)
 		conn.close()
+		return jsonify(yt_id)
 
 @app.route('/get_all_songs/', methods=['GET'])
 @login_required
