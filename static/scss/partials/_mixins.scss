@@ -1,0 +1,23 @@
+@mixin flex {
+	 display: -webkit-flex;
+	 display: flex;
+	 flex-wrap: wrap;
+}
+
+@mixin btn {
+	flex:1;
+		border-width: 1px;
+		border-style: solid;
+		border-color: $background-color;
+		background-color: $light;
+		&:hover {
+			cursor: pointer;
+	}
+}
+
+@mixin input {
+	color: white;
+	border-style: solid;
+	background-color: $background-color;
+	border-color: $dark;
+}

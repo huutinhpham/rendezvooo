@@ -1,7 +1,7 @@
 var homePageView = {
 
 	init: function() {
-		//this.bindPidSubmitBtn();
+		this.bindPidSubmitBtn();
 		this.bindNewPlaylistBtn();
 		$('.request-feedback').html(response);
 	},
@@ -12,21 +12,6 @@ var homePageView = {
 		});
 	},
 
-	// bindPidSubmitBtn: function() {
-	// 	$('#pid-submit-btn').click(function(){
-	// 		var pid = $('#pid-input').val();
-	// 		$.post('/', {
-	// 		    pid: pid
-	// 		}, function(response) {
-	// 			console.log(response)
-	// 			if (response.redirect !== undefined && response.redirect_url) {
-	// 				window.location.href = response.redirect_url
-	// 			} else {
-	// 				$('.request-feedback').html(response);
-	// 			}
-	// 		})
-	// 	});
-	// }
 }
 
 homePageView.init();

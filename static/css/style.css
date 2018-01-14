@@ -1,0 +1,226 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+* {
+  margin: 0;
+  padding: 0; }
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #14130f;
+  color: #D3D3D3; }
+
+.content {
+  margin: auto;
+  width: 95%; }
+
+#title {
+  color: #c07754;
+  font-weight: 100;
+  font-size: 50px;
+  text-align: center;
+  margin-top: 150px;
+  margin-bottom: 25px; }
+
+#nav-links {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 2%;
+  flex: 0 1 auto;
+  margin-top: 15px;
+  list-style-type: none;
+  font-size: 10px;
+  padding-left: 0; }
+  #nav-links .link {
+    padding-right: 5%; }
+    #nav-links .link:not(:first-child) {
+      padding-left: 5%; }
+    #nav-links .link a {
+      border-bottom: 1px solid rgba(251, 247, 245, 0);
+      transition: border-bottom .5s;
+      transition-timing-function: ease-in-out;
+      text-decoration: none;
+      color: #fbf7f5; }
+      #nav-links .link a:hover {
+        border-bottom: 1px solid #fbf7f5;
+        cursor: pointer; }
+      #nav-links .link a:visited {
+        color: #fbf7f5; }
+
+form {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  width: 300px;
+  margin: auto; }
+  form input {
+    color: white;
+    border-style: solid;
+    background-color: #14130f;
+    border-color: #33221a;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    height: 35px;
+    padding-left: 2%;
+    border-width: 2px; }
+
+.submit-btns {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap; }
+  .submit-btns input {
+    padding-left: 0;
+    height: 35px;
+    color: #14130f;
+    flex: 1;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #14130f;
+    background-color: #c07754; }
+    .submit-btns input:hover {
+      cursor: pointer; }
+
+#playlist-header {
+  margin-top: 100px;
+  text-align: center;
+  font-size: 25px;
+  margin-bottom: 50px; }
+  #playlist-header #pid {
+    color: #c07754; }
+  #playlist-header #instruction {
+    font-size: 12px; }
+
+#request-bar {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  height: 35px;
+  margin-bottom: 100px; }
+  #request-bar #request-input {
+    color: white;
+    border-style: solid;
+    background-color: #14130f;
+    border-color: #33221a;
+    flex: 8; }
+  #request-bar #request-label {
+    flex: 1;
+    padding-top: 5px; }
+  #request-bar #request-btn {
+    flex: 1;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #14130f;
+    background-color: #c07754;
+    flex: 2; }
+    #request-bar #request-btn:hover {
+      cursor: pointer; }
+
+#player-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden; }
+
+#player-container iframe, #player-container object, #player-container embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+#playlist-container {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 150px; }
+
+.song-container {
+  background-color: #332E2C;
+  margin-bottom: 35px;
+  width: 330px; }
+
+.song-content {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin: auto;
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px; }
+  .song-content .thumbnail {
+    order: 1; }
+  .song-content .song-btns {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    order: 2; }
+    .song-content .song-btns button {
+      background-color: #332E2C;
+      border-style: solid;
+      border-width: 1px;
+      color: #c07754; }
+      .song-content .song-btns button:hover {
+        cursor: pointer; }
+    .song-content .song-btns .like-btn {
+      padding: 4px 4px 4px 4px; }
+    .song-content .song-btns .play-btn {
+      padding: 2px 8px 2px 8px;
+      float: right; }
+  .song-content .description-container {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+    order: 3;
+    flex-direction: column; }
+    .song-content .description-container .info-button {
+      display: none; }
+    .song-content .description-container .song-title {
+      font-size: 15px;
+      font-weight: 800; }
+    .song-content .description-container .requester {
+      font-size: 12px; }
+
+@media screen and (min-width: 750px) {
+  .song-container {
+    width: 100%; }
+
+  .song-content {
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-direction: row; }
+    .song-content .thumbnail {
+      order: 1;
+      flex: 1; }
+    .song-content .description-container {
+      order: 2;
+      flex: 4;
+      margin-left: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px; }
+      .song-content .description-container .song-title {
+        flex: 1; }
+      .song-content .description-container .requester {
+        flex: 4; }
+      .song-content .description-container .info-button {
+        flex: 1;
+        display: block;
+        font-size: 14px; }
+    .song-content .song-btns {
+      flex-direction: column;
+      order: 3; } }
+@media screen and (min-width: 1000px) {
+  body {
+    width: 1000px;
+    margin: auto; } }
+
+/*# sourceMappingURL=style.css.map */

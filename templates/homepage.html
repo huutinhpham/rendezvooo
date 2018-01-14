@@ -5,19 +5,19 @@
         <p class="error"><strong>Error:</strong>{{error}}</p>
     {% endif %}
 
-        
-    <h4>Login to Playlist:</h4>
-    <br>
+    <p id="title">Rendezvooo</p>
     {% from "_formhelper.html" import render_field %}
     <form method="POST" action="/">
-        <dl>
-            {{ render_field(form.name) }}
+        <h4>Login to Playlist:</h4>
+            {{ render_field(form.name, class="test") }}
             {{ render_field(form.pid) }}
             {{ render_field(form.opt_pw) }}
-         </dl>
-        <p><input type="submit" value="Enter Playlist"></p>
+        
+        <div class="submit-btns">
+            <input type="submit" value="Enter Playlist">
+            <input type="button" id="new-playlist-btn" value="Create New Playlist"></input>
+        </div>
     </form>
-    <button id="new-playlist-btn">Create New Playlist</button>
         
     <script>var response = '{{ response }}'</script>
     <script src="../static/js/views/homepage.js"></script>

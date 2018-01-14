@@ -16,28 +16,31 @@ var playlistView = {
 		var previewElm = document.createElement('requestValidator');
 		previewElm.id = 'requestValidator';
 
-		requestForm = this.renderInputForm()
+		requestInput = this.renderRequestInput();
+		requestBtn = this.renderRequestBtn();
 
 		requestBar.append(previewElm);
-		requestBar.append(requestForm);
-		$('body').append(requestBar);
+		requestBar.append(requestInput);
+		requestBar.append(requestBtn);
+		$('#content').append(requestBar);
 	},
 
-	renderInputForm: function() {
-		var requestFormDiv = document.createElement('div');
+	renderRequestInput: function() {
 		var requestInput = document.createElement('input');
 		requestInput.id = 'request-input'
 		requestInput.type = "text"
 		requestInput.placeholder = "YouTube Url Here";
 
+		return requestInput;		
+	},
+
+	renderRequestBtn: function() {
+
 		var requestBtn = document.createElement('button');
 		requestBtn.id = 'request-btn'
 		requestBtn.innerHTML = 'Submit Url'
 
-		requestFormDiv.append(requestInput);
-		requestFormDiv.append(requestBtn);
-
-		return requestFormDiv;
+		return requestBtn;
 
 	},
 
@@ -66,9 +69,12 @@ var playlistView = {
 	},
 	
 	renderPlayer: function() {
+		var playerContainer = document.createElement('div')
+		playerContainer.id = "player-container"
 		var playerElm = document.createElement('player');
 		playerElm.id = 'player'
-		$('body').append(playerElm);
+		playerContainer.append(playerElm);
+		$('#content').append(playerContainer);
 	},
 
 	loadCurrentSong: function(event) {
@@ -95,7 +101,7 @@ var playlistView = {
 				playlistContainer.append(songView);
 			}
 
-			$('body').append(playlistContainer);
+			$('#content').append(playlistContainer);
 
 		})
 	},
@@ -103,6 +109,8 @@ var playlistView = {
 	renderSongThumbnail: function(songId, likes, requester) {
 		var key = controller.getYtKey();
 		var songContainer = document.createElement('div');
+		var songContent = document.createElement('div')
+		songContent.className = 'song-content'
 		songContainer.className = 'song-container';
 		songContainer.id = songId
 
@@ -115,14 +123,17 @@ var playlistView = {
 			var songInfo= data.items[0].snippet;
 
 			var descriptionContainer = playlistView.renderSongDescription(songId, likes, songInfo, requester)
+			var songBtns = playlistView.renderSongBtns();
 
-			songContainer.append(thumbnail);
-			songContainer.append(descriptionContainer);
+			songContent.append(thumbnail);
+			songContent.append(descriptionContainer);
+			songContent.append(songBtns);
 
 			playlistView.bindPlayBtn(songId);
 			playlistView.loadLikeFeatures(songId, likes)
 		});
 
+		songContainer.append(songContent);
 		return songContainer;
 	},
 
@@ -141,19 +152,26 @@ var playlistView = {
 		var channelElm = this.renderChannelInfo(songInfo.channelTitle)
 		var publishElm = this.renderPublishDate(songInfo.publishedAt)
 
+		descriptionContainer.append(songTitle);
+		descriptionContainer.append(requesterElm);
+		descriptionContainer.append(channelElm);
+		descriptionContainer.append(publishElm);
+
+		return descriptionContainer;
+	},
+
+	renderSongBtns: function() {
+		var songBtns = document.createElement('div')
+		songBtns.className = 'song-btns'
 		var likeBtn = document.createElement('button')
 		likeBtn.className = "like-btn"
 
 		var playBtn = this.renderPlayBtn();
 
-		descriptionContainer.append(songTitle);
-		descriptionContainer.append(requesterElm);
-		descriptionContainer.append(channelElm);
-		descriptionContainer.append(publishElm);
-		descriptionContainer.append(likeBtn);
-		descriptionContainer.append(playBtn);
+		songBtns.append(likeBtn);
+		songBtns.append(playBtn);
 
-		return descriptionContainer;
+		return songBtns
 	},
 
 	renderChannelInfo: function(channelTitle){

@@ -45,17 +45,17 @@ def check_opt_pw(opt_pw):
 
 
 class AccessPlaylistForm(Form):
-	name = TextField('Name', [validators.Length(min=3, max=25)])
-	pid = TextField('Playlist Code')
-	opt_pw = PasswordField('Password (Optional)')
+	name = TextField('Name', [validators.Length(min=3, max=25)], render_kw={"placeholder": "Name"})
+	pid = TextField('Playlist Code', render_kw={"placeholder": "Playlist Code"})
+	opt_pw = PasswordField('Password (Optional)', render_kw={"placeholder": "Password(Optional)"})
 
 
 class GeneratePlaylistForm(Form):
-	name = TextField('Name', [validators.Length(min=3, max=25)])
-	email = EmailField('Email Address', [validators.DataRequired(), validators.Email()])
+	name = TextField('Name', [validators.Length(min=3, max=25)], render_kw={"placeholder": "Name"})
+	email = EmailField('Email Address', [validators.DataRequired(), validators.Email()], render_kw={"placeholder": "Email"})
 	password = PasswordField('New Playlist Password', [
 		validators.Required(), 
 		validators.EqualTo('confirm', message='Passwords must match'),
 		validators.Length(min=7)
-	])
-	confirm = PasswordField('Confirm Password')
+	], render_kw={"placeholder": "Password"})
+	confirm = PasswordField('Confirm Password', render_kw={"placeholder": "Confirm Password"})

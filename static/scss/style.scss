@@ -1,0 +1,250 @@
+@import "partials/variables";
+@import "partials/mixins";
+
+*{
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: $font-family;
+	background-color: $background-color;
+	color: $off-white;
+}
+
+.content {
+	margin: auto;
+	width: 95%;
+}
+
+#title {
+	color: $light;
+	font-weight: 100;
+	font-size: $title-size;
+	text-align: center;
+	margin-top: 150px;
+	margin-bottom: 25px;
+}
+
+
+#nav-links {
+	@include flex;
+	margin-left: 2%;
+	flex: 0 1 auto;
+	margin-top: 15px;
+	list-style-type: none;
+	font-size: $nav-font-size;
+	padding-left: 0;
+
+	.link {
+		padding-right: 5%;
+		&:not(:first-child) {
+			padding-left: 5%;
+		}
+
+		a { 
+			border-bottom: 1px solid transparentize($font-color, 1);
+			transition: border-bottom .5s;
+	    	transition-timing-function: ease-in-out;
+	    	text-decoration: none;
+	    	color: $font-color;
+	    	&:hover {
+	    		border-bottom: 1px solid opacify($font-color, .5);
+	    		cursor: pointer;
+	    	}
+	    	&:visited { color: $font-color; }
+    	}
+	}
+}
+
+form{
+	@include flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 300px;
+	margin: auto;
+
+	input {
+		@include input;
+		margin-bottom: 5px;
+		margin-top: 10px;
+		height: 35px;
+		padding-left: 2%;
+		border-width: 2px;
+	}
+}
+
+.submit-btns{
+	@include flex;
+	input {
+		padding-left: 0;
+		height: 35px;
+		color: $background-color;
+		@include btn;
+	}
+}
+
+#playlist-header {
+	margin-top: 100px;
+	text-align: center;
+	font-size: $playlist-header-size;
+	margin-bottom: 50px;
+	#pid {
+		color: $light;
+	}
+	#instruction {
+		font-size: $instruction-size
+	}
+}
+
+#request-bar{
+	@include flex;
+	height: 35px;
+	margin-bottom: 100px;
+	#request-input {
+		@include input;
+		flex: 8;
+	}
+	#request-label {
+		flex: 1;
+		padding-top: 5px;
+	}
+	#request-btn {
+		@include btn;
+		flex: 2;
+	}
+}
+
+#player-container {
+	position:relative;
+	padding-bottom:56.25%;
+	padding-top:30px;
+	height:0;
+	overflow:hidden;
+}
+
+#player-container iframe, #player-container object, #player-container embed {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+
+
+#playlist-container{
+	@include flex;
+	justify-content: center;
+	margin-top: 150px;
+}
+
+.song-container {
+	background-color: $card-bgc;
+	margin-bottom: 35px;
+	width: 330px;
+}
+
+.song-content {
+	@include flex;
+	flex-direction: column;
+	margin: auto;
+	margin-right: 5px;
+	margin-left: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+
+	.thumbnail {
+		order: 1;
+	}
+
+	.song-btns{
+		@include flex;
+		justify-content: space-between;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		order: 2;
+		button {
+			background-color: $card-bgc;
+			border-style: solid;
+			border-width: 1px;
+			color: $light;
+			&:hover {
+				cursor: pointer;
+			}
+		}
+		.like-btn {
+			padding: 4px 4px 4px 4px;
+		}
+		.play-btn{
+			padding: 2px 8px 2px 8px;
+			float: right;
+		}
+	}
+
+	.description-container{
+		@include flex;
+		order: 3;
+		flex-direction: column;
+		.info-button {
+			display: none;
+		}
+		.song-title {
+			font-size: $song-title-size;
+			font-weight: $song-title-weight;
+		}
+		.requester {
+			font-size: $requester-size
+		}
+
+	}
+}
+
+
+@media screen and (min-width: 750px) {
+
+	.song-container{
+		width: 100%;
+	}
+
+	.song-content{
+		margin-right: 5px;
+		margin-left: 5px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		flex-direction: row;
+		.thumbnail{
+			order: 1;
+			flex: 1;
+		}
+		.description-container{
+			order: 2;
+			flex: 4;
+			margin-left: 10px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+			.song-title{
+				flex: 1;
+			}
+			.requester{
+				flex: 4;
+			}
+			.info-button{
+				flex: 1;
+				display: block;
+				font-size: $song-info-size;
+			}
+		}
+		.song-btns{
+			flex-direction: column;
+			order: 3;
+		}
+	}
+
+}
+
+@media screen and (min-width: 1000px) {
+	body{
+		width: 1000px;
+		margin: auto;
+	}
+}

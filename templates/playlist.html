@@ -2,7 +2,10 @@
     
 {% block content %}
 
-    <p>This playlist code is: {{ pid }}, send it to your friends to collaborate!</p>
+    <div id="playlist-header">
+    	<p>playlist code: <b id="pid">{{ pid }}</b></p><br> 
+    	<p id="instruction">send it to your friends to collaborate!</p>
+    </div>
     <p class="request-feedback"></p>
     <h4>Request Song:</h4>
     <script src="../static/js/views/playlist.js"></script>

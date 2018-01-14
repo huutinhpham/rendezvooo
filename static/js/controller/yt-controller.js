@@ -7,6 +7,8 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 function onYouTubeIframeAPIReady() {
 	var DOMplayer = document.getElementById('player');
 	playlistView.player = new YT.Player('player', {
+        height: "100%",
+        width: "100%",
        	events: {
        	  'onReady': playlistView.loadCurrentSong,
        	  'onStateChange': playlistView.playNextSong,
