@@ -1,7 +1,6 @@
 var homePageView = {
 
 	init: function() {
-		this.bindPidSubmitBtn();
 		this.bindNewPlaylistBtn();
 		$('.request-feedback').html(response);
 	},

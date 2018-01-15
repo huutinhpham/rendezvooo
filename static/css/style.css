@@ -12,7 +12,7 @@ body {
   margin: auto;
   width: 95%; }
 
-#title {
+.intro {
   color: #c07754;
   font-weight: 100;
   font-size: 50px;
@@ -154,6 +154,8 @@ form {
   margin-bottom: 5px; }
   .song-content .thumbnail {
     order: 1; }
+    .song-content .thumbnail:hover {
+      cursor: pointer; }
   .song-content .song-btns {
     display: -webkit-flex;
     display: flex;
@@ -222,5 +224,10 @@ form {
   body {
     width: 1000px;
     margin: auto; } }
+.current-song {
+  background-color: #D3D3D3;
+  color: #332E2C; }
+  .current-song button {
+    background-color: #D3D3D3; }
 
 /*# sourceMappingURL=style.css.map */

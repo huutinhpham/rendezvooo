@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
     
 {% block content %}
-	{% if error %}
-        <p class="error"><strong>Error:</strong>{{error}}</p>
-    {% endif %}
 
-    <p id="title">Rendezvooo</p>
+    <p class="intro">Rendezvooo</p>
     {% from "_formhelper.html" import render_field %}
     <form method="POST" action="/">
+        {% if error %}
+            <p class="error"><strong>Error:</strong>{{error}}</p>
+        {% endif %}
+        <br>
         <h4>Login to Playlist:</h4>
             {{ render_field(form.name, class="test") }}
             {{ render_field(form.pid) }}

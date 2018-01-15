@@ -136,12 +136,13 @@ def load_first_song():
 		#initial request, where collaborator has no current song
 		if song is None:
 			playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
-			if playlist_songs is not None:
+			if len(playlist_songs) > 0:
 				song = playlist_songs[0][1]
 				UPDATE_collaborator_song_request(c, conn, pid, collaborator, song)
 		conn.close()
 		return jsonify(song)
 
+#get next song, return current song along with next song
 @app.route('/next_song/', methods=['GET'])
 @login_required
 def next_song():
@@ -163,8 +164,9 @@ def next_song():
 
 		UPDATE_collaborator_song_request(c, conn, pid, collaborator, playlist_songs[index][1])
 		conn.close()
-		return jsonify(playlist_songs[index][1])
+		return jsonify([curr_song, playlist_songs[index][1]])
 
+#update the current song and return previous song
 @app.route('/change_current_song/', methods=['POST'])
 @login_required
 def change_current_song():
@@ -173,10 +175,10 @@ def change_current_song():
 		collaborator = session['collaborator']
 		yt_id = request.form['yt_id']
 		pid = session['pid']
-
+		previousSong = GET_collaborator_request(c, conn, pid, collaborator)[3]
 		UPDATE_collaborator_song_request(c, conn, pid, collaborator, yt_id)
 		conn.close()
-		return jsonify(yt_id)
+		return jsonify(previousSong)
 
 @app.route('/get_all_songs/', methods=['GET'])
 @login_required

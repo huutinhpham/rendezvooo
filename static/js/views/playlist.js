@@ -44,6 +44,15 @@ var playlistView = {
 
 	},
 
+	bindRequestBtn: function() {
+		$('#request-btn').click(function(){
+			var ytId = controller.parseYTurl($('#request-input').val());
+			playlistView.validateRequest(ytId);
+			controller.postSongRequest(ytId);
+		});
+	},
+	
+
 	loadValidator: function(event) {
 		event.target.mute();
 	},
@@ -60,14 +69,6 @@ var playlistView = {
 		}
 	},
 
-	bindRequestBtn: function() {
-		$('#request-btn').click(function(){
-			var ytId = controller.parseYTurl($('#request-input').val());
-			playlistView.validateRequest(ytId);
-			controller.postSongRequest(ytId);
-		});
-	},
-	
 	renderPlayer: function() {
 		var playerContainer = document.createElement('div')
 		playerContainer.id = "player-container"
@@ -80,14 +81,19 @@ var playlistView = {
 	loadCurrentSong: function(event) {
 		$.get("/load_first_song/", function(song){
 			event.target.cueVideoById(song);
+			$("#" + song).addClass('current-song');
+			// if (song == null) {
+			// 	playlistView.renderEmptyPlaylist();
+			// }
 		}) 
 	},
 
 	playNextSong: function(event) {
 		if(event.data === 0) {
-			$.get("/next_song/", function(song){
-				console.log(song)
-				event.target.loadVideoById(song);
+			$.get("/next_song/", function(songs){
+				event.target.loadVideoById(songs[1]);
+				$("#" + songs[0]).removeClass('current-song');
+				$("#" + songs[1]).addClass('current-song');
 			})    
     	}
 	},
@@ -105,6 +111,14 @@ var playlistView = {
 
 		})
 	},
+
+	// renderEmptyPlaylist: function() {
+	// 	var emptyPlaylist = document.createElement('p')
+	// 	emptyPlaylist.className = 'intro'
+	// 	emptyPlaylist.innerHTML = 'Request a song to your new playlist!'
+
+	// 	("#request-bar").before(emptyPlaylist);
+	// },
 
 	renderSongThumbnail: function(songId, likes, requester) {
 		var key = controller.getYtKey();
@@ -130,6 +144,7 @@ var playlistView = {
 			songContent.append(songBtns);
 
 			playlistView.bindPlayBtn(songId);
+			playlistView.bindThumbnail(songId);
 			playlistView.loadLikeFeatures(songId, likes)
 		});
 
@@ -171,35 +186,37 @@ var playlistView = {
 		songBtns.append(likeBtn);
 		songBtns.append(playBtn);
 
-		return songBtns
+		return songBtns;
 	},
 
 	renderChannelInfo: function(channelTitle){
-		var channelElm = document.createElement('p')
-		channelElm.className="info-button"
-		channelElm.innerHTML = 'From: ' + channelTitle
-		return channelElm
+		var channelElm = document.createElement('p');
+		channelElm.className="info-button";
+		channelElm.innerHTML = 'From: ' + channelTitle;
+		return channelElm;
 	},
 
 	renderPublishDate: function(date){
-		var publishElm = document.createElement('p')
-		var date = new Date(date).toDateString()
-		publishElm.className="info-button"
-		publishElm.innerHTML = 'Published On ' + date
-		return publishElm
+		var publishElm = document.createElement('p');
+		var date = new Date(date).toDateString();
+		publishElm.className="info-button";
+		publishElm.innerHTML = 'Published On ' + date;
+		return publishElm;
 	},
 
-
-	bindLikeFeatures: function(songId) {
-		this.bindLikeThumbnail(songId);
-		this.bindLikeBtn(songId);
+	bindThumbnail: function(songId) {
+		$('#' + songId + ' .thumbnail').click(function(songId){
+			return function() {
+				$.post("/change_current_song/", {
+					yt_id: songId
+				}, function(previousSong) {
+					$("#" + previousSong).removeClass('current-song');
+					$("#" + songId).addClass('current-song');
+					playlistView.player.loadVideoById(songId);
+				})
+			}
+		}(songId));
 	},
-
-	bindUnlikeFeatures: function(songId) {
-		this.bindUnlikeThumbnail(songId)
-		this.bindUnlikeBtn(songId);
-	},
-
 
 	loadLikeFeatures: function(songId, likes) {
 		$.post('/is_liked/', {
@@ -207,38 +224,12 @@ var playlistView = {
 		}, function(is_liked) {
 			if (is_liked != true) {
 				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes))
-				playlistView.bindLikeFeatures(songId)
+				playlistView.bindLikeBtn(songId)
 			} else {
 				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes))
-				playlistView.bindUnlikeFeatures(songId)
+				playlistView.bindUnlikeBtn(songId)
 			}
 		})
-	},
-
-	bindLikeThumbnail: function(songId) {
-		$('#' + songId + ' .thumbnail').unbind().dblclick(function(songId){
-			return function() {
-				$.post("/liked/", {
-					yt_id: songId
-				}, function(likes) {
-					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes));
-					playlistView.bindUnlikeFeatures(songId);
-				});
-			}
-		}(songId));
-	},
-
-	bindUnlikeThumbnail: function(songId) {
-		$('#' + songId + ' .thumbnail').unbind().dblclick(function(songId){
-			return function() {
-				$.post("/unliked/", {
-					yt_id: songId
-				}, function(likes) {
-					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes));
-					playlistView.bindLikeFeatures(songId);
-				});
-			}
-		}(songId));
 	},
 
 	renderLikeBtn: function(songId, likes) {
@@ -265,7 +256,7 @@ var playlistView = {
 					yt_id: songId
 				}, function(likes) {
 					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes));
-					playlistView.bindUnlikeFeatures(songId);
+					playlistView.bindUnlikeBtn(songId);
 				});
 			}
 		}(songId));
@@ -278,7 +269,7 @@ var playlistView = {
 					yt_id: songId
 				}, function(likes) {
 					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes));
-					playlistView.bindLikeFeatures(songId)
+					playlistView.bindLikeBtn(songId)
 				});
 			}
 		}(songId));
@@ -296,8 +287,10 @@ var playlistView = {
 			return function() {
 				$.post("/change_current_song/", {
 					yt_id: songId
-				}, function(data) {
-					playlistView.player.loadVideoById(data);
+				}, function(previousSong) {
+					$("#" + previousSong).removeClass('current-song');
+					$("#" + songId).addClass('current-song');
+					playlistView.player.loadVideoById(songId);
 				})
 			}
 		}(songId));

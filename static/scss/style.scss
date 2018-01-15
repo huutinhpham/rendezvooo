@@ -17,10 +17,10 @@ body {
 	width: 95%;
 }
 
-#title {
+.intro {
 	color: $light;
 	font-weight: 100;
-	font-size: $title-size;
+	font-size: $intro-size;
 	text-align: center;
 	margin-top: 150px;
 	margin-bottom: 25px;
@@ -155,6 +155,9 @@ form{
 
 	.thumbnail {
 		order: 1;
+		&:hover {
+			cursor: pointer;
+		}
 	}
 
 	.song-btns{
@@ -246,5 +249,13 @@ form{
 	body{
 		width: 1000px;
 		margin: auto;
+	}
+}
+
+.current-song {
+	background-color: $off-white;
+	color: $card-bgc;
+	button {
+		background-color: $off-white;
 	}
 }
