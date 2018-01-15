@@ -152,12 +152,13 @@ var playlistView = {
 			var songInfo= data.items[0].snippet;
 
 			var descriptionContainer = playlistView.renderSongDescription(songId, likes, songInfo, requester)
-			var songBtns = playlistView.renderSongBtns();
+			var deleteBtn = playlistView.renderDeleteBtn();
 
 			songContent.append(thumbnail);
 			songContent.append(descriptionContainer);
-			songContent.append(songBtns);
+			songContent.append(deleteBtn);
 
+			playlistView.bindDeleteBtn(songId);
 			playlistView.bindPlayBtn(songId);
 			playlistView.bindThumbnail(songId);
 			playlistView.loadLikeFeatures(songId, likes)
@@ -186,10 +187,13 @@ var playlistView = {
 		var channelElm = this.renderChannelInfo(songInfo.channelTitle)
 		var publishElm = this.renderPublishDate(songInfo.publishedAt)
 
+		var songBtns = playlistView.renderSongBtns();
+
 		descriptionContainer.append(songTitle);
 		descriptionContainer.append(requesterElm);
 		descriptionContainer.append(channelElm);
 		descriptionContainer.append(publishElm);
+		descriptionContainer.append(songBtns);
 
 		return descriptionContainer;
 	},
@@ -197,9 +201,8 @@ var playlistView = {
 	renderSongBtns: function() {
 		var songBtns = document.createElement('div')
 		songBtns.className = 'song-btns'
-		var likeBtn = document.createElement('button')
-		likeBtn.className = "like-btn"
 
+		var likeBtn = this.renderLikeBtn(0);
 		var playBtn = this.renderPlayBtn();
 
 		songBtns.append(likeBtn);
@@ -236,21 +239,79 @@ var playlistView = {
 		}(songId));
 	},
 
+	renderDeleteBtn: function() {
+		var deleteBtn = document.createElement('button')
+		deleteBtn.className = 'delete-btn'
+		deleteBtn.innerHTML = "&#x2613"
+
+		return deleteBtn;
+	},
+
+	bindDeleteBtn: function(songId) {
+		$('#' + songId + ' .delete-btn').click(function(songId){
+			return function() {
+				$('#' + songId + ' .delete-btn').replaceWith(playlistView.renderDeleteConfirmBtns());
+				playlistView.bindDeleteConfirmBtn(songId);
+				playlistView.bindCancelDeleteBtn(songId);
+			}
+		}(songId));
+	},
+
+	renderDeleteConfirmBtns: function() {
+		var confirmDiv = document.createElement('div')
+		confirmDiv.className = 'confirm-div'
+
+		var deleteConfirmBtn = document.createElement('button')
+		deleteConfirmBtn.className = 'delete-confirm-btn'
+		deleteConfirmBtn.innerHTML = "DELETE SONG"
+
+		var cancelDeleteBtn = document.createElement('button')
+		cancelDeleteBtn.className = 'cancel-delete-btn'
+		cancelDeleteBtn.innerHTML = "Cancel"
+
+		confirmDiv.append(cancelDeleteBtn);
+		confirmDiv.append(deleteConfirmBtn);
+
+		return confirmDiv;
+	},
+
+	bindDeleteConfirmBtn: function(songId) {
+		$('#' + songId + ' .delete-confirm-btn').click(function(songId) {
+			return function() {
+				$.post('/delete_song/', {
+					yt_id: songId
+				}, function() {
+					playlistView.deleteSongThumbnail(songId);
+				})
+			}
+		}(songId));
+	},
+
+	bindCancelDeleteBtn: function(songId) {
+		$("#" + songId + ' .cancel-delete-btn').click(function(songId) {
+			return function() {
+				console.log('hello')
+				$('#' + songId + ' .confirm-div').replaceWith(playlistView.renderDeleteBtn());
+				playlistView.bindDeleteBtn(songId);
+			}
+		}(songId));
+	},
+
 	loadLikeFeatures: function(songId, likes) {
 		$.post('/is_liked/', {
 			yt_id: songId
 		}, function(is_liked) {
 			if (is_liked != true) {
-				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes))
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(likes))
 				playlistView.bindLikeBtn(songId)
 			} else {
-				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes))
+				$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(likes))
 				playlistView.bindUnlikeBtn(songId)
 			}
 		})
 	},
 
-	renderLikeBtn: function(songId, likes) {
+	renderLikeBtn: function(likes) {
 		var likeBtn = document.createElement('button');
 		likeBtn.className = "like-btn"
 		likeBtn.innerHTML = "&#x2661" + " " + likes;
@@ -258,7 +319,7 @@ var playlistView = {
 		return likeBtn;
 	},
 
-	renderUnlikeBtn: function(songId, likes) {
+	renderUnlikeBtn: function(likes) {
 		var likeBtn = document.createElement('button');
 		likeBtn.className = "like-btn"
 		likeBtn.innerHTML = "&#x2764" + " " + likes;
@@ -273,7 +334,7 @@ var playlistView = {
 				$.post("/liked/", {
 					yt_id: songId
 				}, function(likes) {
-					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(songId, likes));
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(likes));
 					playlistView.bindUnlikeBtn(songId);
 				});
 			}
@@ -286,7 +347,7 @@ var playlistView = {
 				$.post("/unliked/", {
 					yt_id: songId
 				}, function(likes) {
-					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(songId, likes));
+					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(likes));
 					playlistView.bindLikeBtn(songId)
 				});
 			}

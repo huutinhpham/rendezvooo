@@ -164,7 +164,6 @@ form{
 		@include flex;
 		justify-content: space-between;
 		margin-top: 5px;
-		margin-bottom: 5px;
 		order: 2;
 		button {
 			background-color: $card-bgc;
@@ -198,7 +197,13 @@ form{
 		.requester {
 			font-size: $requester-size
 		}
-
+		.delete-btn{
+			padding: 2px 2px 2px 2px;
+			background-color: $card-bgc;
+			border-style: solid;
+			border-width: 1px;
+			color: $light;
+		}
 	}
 }
 
@@ -224,7 +229,6 @@ form{
 			flex: 4;
 			margin-left: 10px;
 			margin-top: 10px;
-			margin-bottom: 10px;
 			.song-title{
 				flex: 1;
 			}
@@ -237,9 +241,20 @@ form{
 				font-size: $song-info-size;
 			}
 		}
-		.song-btns{
+		.delete-btn{
+			align-self: flex-start;
+			flex-basis: auto;
+			order:3;
+			padding: 2px 2px 2px 2px;
+			background: none;
+			border: none;
+			color: $light;
+		}
+		.confirm-div{
+			@include flex;
+			margin-left: 10px;
 			flex-direction: column;
-			order: 3;
+			order:3;
 		}
 	}
 
@@ -255,7 +270,29 @@ form{
 .current-song {
 	background-color: $off-white;
 	color: $card-bgc;
-	button {
-		background-color: $off-white;
+	.delete-btn{
+		color: $card-bgc;
 	}
+	.cancel-delete-btn {
+		background-color: $off-white;
+		color: black;
+	}
+}
+
+.delete-confirm-btn{
+	padding: 0px 5px 0px 5px;
+	flex: 1;
+	border-style: solid;
+	border-width: 1px;
+	background-color: $light;
+	color: $off-white;
+}
+
+.cancel-delete-btn {
+	padding: 0px 5px 0px 5px;
+	flex: 1;
+	border-style: solid;
+	border-width: 1px;
+	color: $off-white;
+	background-color: $card-bgc;
 }

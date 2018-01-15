@@ -162,7 +162,6 @@ form {
     flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 5px;
-    margin-bottom: 5px;
     order: 2; }
     .song-content .song-btns button {
       background-color: #332E2C;
@@ -189,6 +188,12 @@ form {
       font-weight: 800; }
     .song-content .description-container .requester {
       font-size: 12px; }
+    .song-content .description-container .delete-btn {
+      padding: 2px 2px 2px 2px;
+      background-color: #332E2C;
+      border-style: solid;
+      border-width: 1px;
+      color: #c07754; }
 
 @media screen and (min-width: 750px) {
   .song-container {
@@ -207,8 +212,7 @@ form {
       order: 2;
       flex: 4;
       margin-left: 10px;
-      margin-top: 10px;
-      margin-bottom: 10px; }
+      margin-top: 10px; }
       .song-content .description-container .song-title {
         flex: 1; }
       .song-content .description-container .requester {
@@ -217,7 +221,19 @@ form {
         flex: 1;
         display: block;
         font-size: 14px; }
-    .song-content .song-btns {
+    .song-content .delete-btn {
+      align-self: flex-start;
+      flex-basis: auto;
+      order: 3;
+      padding: 2px 2px 2px 2px;
+      background: none;
+      border: none;
+      color: #c07754; }
+    .song-content .confirm-div {
+      display: -webkit-flex;
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: 10px;
       flex-direction: column;
       order: 3; } }
 @media screen and (min-width: 1000px) {
@@ -227,7 +243,26 @@ form {
 .current-song {
   background-color: #D3D3D3;
   color: #332E2C; }
-  .current-song button {
-    background-color: #D3D3D3; }
+  .current-song .delete-btn {
+    color: #332E2C; }
+  .current-song .cancel-delete-btn {
+    background-color: #D3D3D3;
+    color: black; }
+
+.delete-confirm-btn {
+  padding: 0px 5px 0px 5px;
+  flex: 1;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #c07754;
+  color: #D3D3D3; }
+
+.cancel-delete-btn {
+  padding: 0px 5px 0px 5px;
+  flex: 1;
+  border-style: solid;
+  border-width: 1px;
+  color: #D3D3D3;
+  background-color: #332E2C; }
 
 /*# sourceMappingURL=style.css.map */
