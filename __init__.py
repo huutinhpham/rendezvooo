@@ -189,6 +189,11 @@ def get_all_songs():
 		conn.close()
 		return jsonify(playlist_songs)
 
+@app.route('/get_collaborator/', methods=['GET'])
+@login_required
+def get_collaborator():
+	return jsonify(session['collaborator'])
+
 @app.route('/delete_song/', methods=['POST'])
 @login_required
 def delete_song():

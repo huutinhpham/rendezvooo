@@ -49,6 +49,9 @@ var playlistView = {
 			var ytId = controller.parseYTurl($('#request-input').val());
 			playlistView.validateRequest(ytId);
 			controller.postSongRequest(ytId);
+			$.get('/get_collaborator/', function(collaborator) {
+				$("#content").append(playlistView.renderSongThumbnail(ytId, 0, collaborator));
+			})
 		});
 	},
 	
@@ -65,7 +68,9 @@ var playlistView = {
 	onRequestError: function(event) {
 		console.log(event.data);
 		if (event.data == 150 || event.data == 101) {
-			controller.invalidSongRequest(controller.parseYTurl($('#request-input').val()))
+			ytId = controller.parseYTurl($('#request-input').val())
+			controller.invalidSongRequest(ytId);
+			playlistView.deleteSongThumbnail(ytId);
 		}
 	},
 
@@ -90,10 +95,10 @@ var playlistView = {
 
 	playNextSong: function(event) {
 		if(event.data === 0) {
+			playlistView.reRenderPlaylist();
 			$.get("/next_song/", function(songs){
 				event.target.loadVideoById(songs[1]);
-				$("#" + songs[0]).removeClass('current-song');
-				$("#" + songs[1]).addClass('current-song');
+				playlistView.updateCurrentSong(songs[0], songs[1]);
 			})    
     	}
 	},
@@ -110,6 +115,16 @@ var playlistView = {
 			$('#content').append(playlistContainer);
 
 		})
+	},
+
+	reRenderPlaylist: function() {
+		$('#playlist-container').remove();
+		this.renderPlaylist();
+	},
+
+	updateCurrentSong: function(previousSong, currentSong) {
+		$("#" + previousSong).removeClass('current-song');
+		$("#" + currentSong).addClass('current-song');
 	},
 
 	// renderEmptyPlaylist: function() {
@@ -150,6 +165,10 @@ var playlistView = {
 
 		songContainer.append(songContent);
 		return songContainer;
+	},
+
+	deleteSongThumbnail: function(songId) {
+		$("#" + songId).remove();
 	},
 
 	renderSongDescription: function(songId, likes, songInfo, requester) {
@@ -210,8 +229,7 @@ var playlistView = {
 				$.post("/change_current_song/", {
 					yt_id: songId
 				}, function(previousSong) {
-					$("#" + previousSong).removeClass('current-song');
-					$("#" + songId).addClass('current-song');
+					playlistView.updateCurrentSong(previousSong, songId);
 					playlistView.player.loadVideoById(songId);
 				})
 			}
