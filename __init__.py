@@ -195,7 +195,9 @@ def get_playlist_data():
 @app.route('/get_collaborator/', methods=['GET'])
 @login_required
 def get_collaborator():
-	return jsonify(session['collaborator'])
+	collaborator = session['collaborator']
+	is_admin = session['is_admin']
+	return jsonify([is_admin, collaborator])
 
 @app.route('/delete_song/', methods=['POST'])
 @login_required
