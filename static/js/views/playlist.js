@@ -104,11 +104,13 @@ var playlistView = {
 	},
 
 	renderPlaylist: function() {
-		$.get("/get_all_songs/", function(songs){
+		$.get("/get_playlist_data/", function(data){
 			var playlistContainer = document.createElement('div');
+			is_admin=data[0]
+			songs=data[1]
 			playlistContainer.id = 'playlist-container';
 			for (var i = 0; i < songs.length; i++) {
-				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3]);
+				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3], is_admin);
 				playlistContainer.append(songView);
 			}
 
@@ -135,7 +137,7 @@ var playlistView = {
 	// 	("#request-bar").before(emptyPlaylist);
 	// },
 
-	renderSongThumbnail: function(songId, likes, requester) {
+	renderSongThumbnail: function(songId, likes, requester, is_admin) {
 		var key = controller.getYtKey();
 		var songContainer = document.createElement('div');
 		var songContent = document.createElement('div')
@@ -152,13 +154,16 @@ var playlistView = {
 			var songInfo= data.items[0].snippet;
 
 			var descriptionContainer = playlistView.renderSongDescription(songId, likes, songInfo, requester)
-			var deleteBtn = playlistView.renderDeleteBtn();
 
 			songContent.append(thumbnail);
 			songContent.append(descriptionContainer);
-			songContent.append(deleteBtn);
 
-			playlistView.bindDeleteBtn(songId);
+				if (is_admin) {
+					var deleteBtn = playlistView.renderDeleteBtn();
+					songContent.append(deleteBtn);
+					playlistView.bindDeleteBtn(songId);
+				}
+
 			playlistView.bindPlayBtn(songId);
 			playlistView.bindThumbnail(songId);
 			playlistView.loadLikeFeatures(songId, likes)

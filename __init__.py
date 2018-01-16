@@ -180,14 +180,17 @@ def change_current_song():
 		conn.close()
 		return jsonify(previousSong)
 
-@app.route('/get_all_songs/', methods=['GET'])
+
+#Returns admin status along with songs within the playlist
+@app.route('/get_playlist_data/', methods=['GET'])
 @login_required
-def get_all_songs():
+def get_playlist_data():
 	if request.method == 'GET':
 		c, conn = connection()
 		playlist_songs = GET_all_songs_request_sorted(c, conn, session['pid'])
+		is_admin = session['admin']
 		conn.close()
-		return jsonify(playlist_songs)
+		return jsonify([is_admin, playlist_songs])
 
 @app.route('/get_collaborator/', methods=['GET'])
 @login_required
