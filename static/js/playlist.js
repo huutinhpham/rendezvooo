@@ -14,25 +14,13 @@ var playlistView = {
 	renderPage: function() {
 		var requestBarElm = this.renderRequestBar();
 		var playerElm = this.renderPlayer();
+		var currSongInfo = document.createElement('div')
+		currSongInfo.id = 'curr-song-info'
 
 		$('#content').append(requestBarElm);
 		$('#content').append(playerElm);
+		$('#content').append(currSongInfo);
 
-	},
-
-	renderPlaylist: function() {
-		$.get("/get_playlist_data/", function(data){
-			var playlistContainer = document.createElement('div');
-			is_admin=data[0];
-			songs=data[1];
-			playlistContainer.id = 'playlist-container';
-			for (var i = 0; i < songs.length; i++) {
-				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3], is_admin);
-				playlistContainer.append(songView);
-			}
-
-			$('#content').append(playlistContainer);
-		})
 	},
 
 	renderRequestBar: function() {
@@ -85,13 +73,55 @@ var playlistView = {
 		this.renderPlaylist();
 	},
 
+	renderPlaylist: function() {
+		$.get("/get_playlist_data/", function(data){
+			var playlistContainer = document.createElement('div');
+			is_admin=data[0];
+			songs=data[1];
+			playlistContainer.id = 'playlist-container';
+			for (var i = 0; i < songs.length; i++) {
+				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3], is_admin);
+				playlistContainer.append(songView);
+			}
+
+			$('#content').append(playlistContainer);
+		})
+	},
+
+	reRenderCurrSongInfo(songId) {
+		$('#curr-song-info').replaceWith(this.renderCurrentSongInfo(songId));
+	},
+
+	renderCurrentSongInfo(songId) {
+		var key = this.ytKey;
+		var currSongInfo = document.createElement('div');
+		var id= "curr-song-info";
+		$.getJSON('https://www.googleapis.com/youtube/v3/videos?key='+key+'&part=snippet&id='+songId), function(data) {
+			var currSongTitle = document.createElement('p');
+			currSongTitle.id = 'curr-song-title';
+			currSongTitle.innerHTML = data.items[0].snippet.title;
+
+			var songChannel = this.renderChannelInfo(data.items[0].snippet.channelTitle);
+			var songPublishDate = this.renderPublishDate(data.items[0].snippet.publishedAt);
+			var songDescription = this.renderSongInfo(data.items[0].snippet.description);
+
+			currSongInfo.append(currSongTitle);
+			currSongInfo.append(songChannel);
+			currSongInfo.append(songPublishDate);
+			currSongInfo.append(songDescription);
+			$('#content').append(currSongInfo);
+		}
+
+		return currSongInfo;
+	},
+
 	renderSongThumbnail: function(songId, likes, requester, is_admin) {
 		var key = this.ytKey;
 		var songContainer = document.createElement('div');
-		var songContent = document.createElement('div')
-		songContent.className = 'song-content'
+		var songContent = document.createElement('div');
+		songContent.className = 'song-content';
 		songContainer.className = 'song-container';
-		songContainer.id = songId
+		songContainer.id = songId;
 
 		$.getJSON('https://www.googleapis.com/youtube/v3/videos?key='+key+'&part=snippet&id='+songId, function(data) {
 
@@ -202,6 +232,12 @@ var playlistView = {
 		return publishElm;
 	},
 
+	renderSongInfo: function(description) {
+		var descriptionElm = document.createElement('p');
+		descriptionElm.className="song-description";
+		descriptionElm.innerHTML = 'Description: \n' + description;
+		return descriptionElm;
+	},
 
 	renderDeleteBtn: function() {
 		var deleteBtn = document.createElement('button')
@@ -257,6 +293,7 @@ var playlistView = {
 				}, function(previousSong) {
 					playlistView.updateCurrentSong(previousSong, songId);
 					playlistView.player.loadVideoById(songId);
+					playlistView.reRenderCurrSongInfo(songId);
 				})
 			}
 		}(songId));
@@ -358,6 +395,7 @@ var playlistView = {
 			// if (song == null) {
 			// 	playlistView.renderEmptyPlaylist();
 			// }
+			playlistView.reRenderCurrSongInfo(song)
 		}) 
 	},
 
@@ -367,6 +405,7 @@ var playlistView = {
 			$.get("/next_song/", function(songs){
 				event.target.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
+				playlistView.reRenderCurrSongInfo(song[1]);
 			})    
     	}
 	},
