@@ -8,7 +8,9 @@ body {
   background-color: #14130f;
   color: #D3D3D3; }
 
-.content {
+#content {
+  margin-left: 2%;
+  margin-right: 2%;
   margin: auto;
   width: 95%; }
 
@@ -17,14 +19,13 @@ body {
   font-weight: 100;
   font-size: 50px;
   text-align: center;
-  margin-top: 150px;
+  margin-top: 120px;
   margin-bottom: 25px; }
 
 #nav-links {
   display: -webkit-flex;
   display: flex;
   flex-wrap: wrap;
-  margin-left: 2%;
   flex: 0 1 auto;
   margin-top: 15px;
   list-style-type: none;
@@ -82,7 +83,7 @@ form {
       cursor: pointer; }
 
 #playlist-header {
-  margin-top: 100px;
+  margin-top: 120px;
   text-align: center;
   font-size: 25px;
   margin-bottom: 50px; }
@@ -103,9 +104,6 @@ form {
     background-color: #14130f;
     border-color: #33221a;
     flex: 8; }
-  #request-bar #request-label {
-    flex: 1;
-    padding-top: 5px; }
   #request-bar #request-btn {
     flex: 1;
     border-width: 1px;
@@ -139,8 +137,8 @@ form {
 
 .song-container {
   background-color: #332E2C;
-  margin-bottom: 35px;
-  width: 330px; }
+  margin-bottom: 50px;
+  width: 320px; }
 
 .song-content {
   display: -webkit-flex;
@@ -151,35 +149,26 @@ form {
   margin-right: 5px;
   margin-left: 5px;
   margin-top: 5px;
-  margin-bottom: 5px; }
+  margin-bottom: 10px; }
+  .song-content .delete-btn {
+    align-self: flex-end;
+    order: 1;
+    background-color: #332E2C;
+    border: none;
+    color: #c07754; }
+  .song-content .confirm-div {
+    align-self: flex-end; }
   .song-content .thumbnail {
-    order: 1; }
-    .song-content .thumbnail:hover {
-      cursor: pointer; }
-  .song-content .song-btns {
-    display: -webkit-flex;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
     margin-top: 5px;
     order: 2; }
-    .song-content .song-btns button {
-      background-color: #332E2C;
-      border-style: solid;
-      border-width: 1px;
-      color: #c07754; }
-      .song-content .song-btns button:hover {
-        cursor: pointer; }
-    .song-content .song-btns .like-btn {
-      padding: 4px 4px 4px 4px; }
-    .song-content .song-btns .play-btn {
-      padding: 2px 8px 2px 8px;
-      float: right; }
+    .song-content .thumbnail:hover {
+      cursor: pointer; }
   .song-content .description-container {
     display: -webkit-flex;
     display: flex;
     flex-wrap: wrap;
     order: 3;
+    margin-top: 5px;
     flex-direction: column; }
     .song-content .description-container .info-button {
       display: none; }
@@ -188,22 +177,45 @@ form {
       font-weight: 800; }
     .song-content .description-container .requester {
       font-size: 12px; }
-    .song-content .description-container .delete-btn {
-      padding: 2px 2px 2px 2px;
-      background-color: #332E2C;
-      border-style: solid;
-      border-width: 1px;
-      color: #c07754; }
+    .song-content .description-container .song-btns {
+      display: -webkit-flex;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 5px;
+      order: 2; }
+      .song-content .description-container .song-btns button {
+        background-color: #332E2C;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #c07754;
+        color: #c07754; }
+        .song-content .description-container .song-btns button:hover {
+          cursor: pointer; }
+      .song-content .description-container .song-btns .like-btn {
+        padding: 4px 4px 4px 4px; }
+      .song-content .description-container .song-btns .play-btn {
+        padding: 2px 8px 2px 8px;
+        float: right; }
 
-@media screen and (min-width: 750px) {
+a {
+  text-decoration: none;
+  color: #c07754; }
+
+ul li {
+  margin-bottom: 25px;
+  list-style-type: None; }
+  ul li b {
+    color: #c07754; }
+
+@media screen and (min-width: 675px) {
+  #playlist-container {
+    justify-content: space-between; } }
+@media screen and (min-width: 800px) {
   .song-container {
     width: 100%; }
 
   .song-content {
-    margin-right: 5px;
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
     flex-direction: row; }
     .song-content .thumbnail {
       order: 1;
@@ -216,7 +228,7 @@ form {
       .song-content .description-container .song-title {
         flex: 1; }
       .song-content .description-container .requester {
-        flex: 4; }
+        flex: 3; }
       .song-content .description-container .info-button {
         flex: 1;
         display: block;
@@ -225,14 +237,12 @@ form {
       align-self: flex-start;
       flex-basis: auto;
       order: 3;
-      padding: 2px 2px 2px 2px;
-      background: none;
-      border: none;
-      color: #c07754; }
+      padding: 2px 2px 2px 2px; }
     .song-content .confirm-div {
       display: -webkit-flex;
       display: flex;
       flex-wrap: wrap;
+      align-self: stretch;
       margin-left: 10px;
       flex-direction: column;
       order: 3; } }
@@ -244,10 +254,15 @@ form {
   background-color: #D3D3D3;
   color: #332E2C; }
   .current-song .delete-btn {
+    background-color: #D3D3D3;
     color: #332E2C; }
   .current-song .cancel-delete-btn {
     background-color: #D3D3D3;
     color: black; }
+  .current-song .description-container .song-btns button {
+    border-color: #c07754;
+    color: #c07754;
+    background-color: #D3D3D3; }
 
 .delete-confirm-btn {
   padding: 0px 5px 0px 5px;

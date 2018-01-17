@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        {% block head %}
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <title>Rendezvooo</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="../static/css/style.css">
+        {% endblock %}
+
+        <title>{% block title %}{% endblock %} - Rendezvooo</title>
+    </head>
+    
+    <body>
+        
+        <div id="content">
+            <ul id="nav-links">
+                <li class="link"><a href="/">Rendezvooo</a></li>
+                <li class="link"><a href="/how-it-works/">How it Works</a></li>
+                {% if session.logged_in %}
+                    <li class="link"><a href="/playlist/">Playlist</a></li>
+                    <li class="link"><a href="/logout/">Logout</a></li>
+                {% else %}
+                    <li class="link"><a href="/generate-playlist/">New Playlist</a></li>
+                {% endif %}
+            </ul>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+        {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

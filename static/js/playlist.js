@@ -234,7 +234,7 @@ var playlistView = {
 		$("#" + currentSong).addClass('current-song');
 	},
 
-	// ===== BIND FUNCTIONS =====
+	// ===== BIND EVENT LISTENER FUNCTIONS =====
 
 	bindRequestBtn: function() {
 		$('#request-btn').click(function(){
@@ -244,7 +244,7 @@ var playlistView = {
 			$.get('/get_collaborator/', function(data) {
 				is_admin = data[0];
 				collaborator = data[1];
-				$("#content").append(playlistView.renderSongThumbnail(ytId, 0, collaborator, is_admin));
+				$("#playlist-container").append(playlistView.renderSongThumbnail(ytId, 0, collaborator, is_admin));
 			})
 		});
 	},
