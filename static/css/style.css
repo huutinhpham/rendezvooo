@@ -135,6 +135,16 @@ form {
   justify-content: center;
   margin-top: 150px; }
 
+#curr-song-info {
+  margin-top: 40px; }
+  #curr-song-info .song-title {
+    font-size: 25px;
+    font-weight: 800; }
+  #curr-song-info .song-info {
+    font-size: 15px;
+    font-weight: 100;
+    margin-top: 10px; }
+
 .song-container {
   background-color: #332E2C;
   margin-bottom: 50px;
@@ -170,7 +180,7 @@ form {
     order: 3;
     margin-top: 5px;
     flex-direction: column; }
-    .song-content .description-container .info-button {
+    .song-content .description-container .song-info {
       display: none; }
     .song-content .description-container .song-title {
       font-size: 15px;
@@ -229,7 +239,7 @@ ul li {
         flex: 1; }
       .song-content .description-container .requester {
         flex: 3; }
-      .song-content .description-container .info-button {
+      .song-content .description-container .song-info {
         flex: 1;
         display: block;
         font-size: 14px; }

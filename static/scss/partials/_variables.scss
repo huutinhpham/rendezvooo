@@ -11,10 +11,15 @@ $dark: #33221a;
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 $font-family: 'Roboto', sans-serif;
 $font-color: #fbf7f5;
+
+// === FONT WEIGHT ===
 $song-title-weight: 800;
 $intro-weight: 100;
+$curr-song-info-weight: 100;
 
-// === FONT SIZES ===
+// === FONT SIZE ===
+$curr-song-title-size: 25px;
+$curr-song-info-size: 15px;
 $nav-font-size: 10px;
 $intro-size: 50px;
 $playlist-header-size: 25px;

@@ -88,31 +88,21 @@ var playlistView = {
 		})
 	},
 
-	reRenderCurrSongInfo(songId) {
-		$('#curr-song-info').replaceWith(this.renderCurrentSongInfo(songId));
-	},
-
-	renderCurrentSongInfo(songId) {
+	renderCurrSongInfo: function(songId) {
 		var key = this.ytKey;
 		var currSongInfo = document.createElement('div');
-		var id= "curr-song-info";
-		$.getJSON('https://www.googleapis.com/youtube/v3/videos?key='+key+'&part=snippet&id='+songId), function(data) {
-			var currSongTitle = document.createElement('p');
-			currSongTitle.id = 'curr-song-title';
-			currSongTitle.innerHTML = data.items[0].snippet.title;
+		currSongInfo.id= "curr-song-info";
+		$.getJSON('https://www.googleapis.com/youtube/v3/videos?key='+key+'&part=snippet&id='+songId, function(data) {
 
-			var songChannel = this.renderChannelInfo(data.items[0].snippet.channelTitle);
-			var songPublishDate = this.renderPublishDate(data.items[0].snippet.publishedAt);
-			var songDescription = this.renderSongInfo(data.items[0].snippet.description);
+			var currSongTitle = playlistView.renderSongTitle(data.items[0].snippet.title)
+			var songChannel = playlistView.renderChannelInfo(data.items[0].snippet.channelTitle);
+			var songPublishDate = playlistView.renderPublishDate(data.items[0].snippet.publishedAt);
 
 			currSongInfo.append(currSongTitle);
 			currSongInfo.append(songChannel);
 			currSongInfo.append(songPublishDate);
-			currSongInfo.append(songDescription);
-			$('#content').append(currSongInfo);
-		}
-
-		return currSongInfo;
+			$('#curr-song-info').replaceWith(currSongInfo);
+		});
 	},
 
 	renderSongThumbnail: function(songId, likes, requester, is_admin) {
@@ -159,17 +149,10 @@ var playlistView = {
 		var descriptionContainer=document.createElement('div')
 		descriptionContainer.className='description-container'
 
-		var songTitle = document.createElement('p');
-		songTitle.className='song-title';
-		songTitle.innerHTML = songInfo.title;
-
-		var requesterElm = document.createElement('p')
-		requesterElm.className='requester'
-		requesterElm.innerHTML="Requested By: " + requester
-
+		var songTitle = this.renderSongTitle(songInfo.title);
+		var requesterElm = this.renderRequester(requester);
 		var channelElm = this.renderChannelInfo(songInfo.channelTitle)
 		var publishElm = this.renderPublishDate(songInfo.publishedAt)
-
 		var songBtns = playlistView.renderSongBtns();
 
 		descriptionContainer.append(songTitle);
@@ -179,6 +162,22 @@ var playlistView = {
 		descriptionContainer.append(songBtns);
 
 		return descriptionContainer;
+	},
+
+	renderSongTitle: function(title) {
+		var songTitle = document.createElement('p');
+		songTitle.className='song-title';
+		songTitle.innerHTML = title;
+
+		return songTitle;
+	},
+
+	renderRequester: function(requester) {
+		var requesterElm = document.createElement('p')
+		requesterElm.className='requester'
+		requesterElm.innerHTML="Requested By: " + requester
+
+		return requesterElm;
 	},
 
 	renderSongBtns: function() {
@@ -219,7 +218,7 @@ var playlistView = {
 
 	renderChannelInfo: function(channelTitle){
 		var channelElm = document.createElement('p');
-		channelElm.className="info-button";
+		channelElm.className="song-info";
 		channelElm.innerHTML = 'From: ' + channelTitle;
 		return channelElm;
 	},
@@ -227,16 +226,9 @@ var playlistView = {
 	renderPublishDate: function(date){
 		var publishElm = document.createElement('p');
 		var date = new Date(date).toDateString();
-		publishElm.className="info-button";
+		publishElm.className="song-info";
 		publishElm.innerHTML = 'Published On ' + date;
 		return publishElm;
-	},
-
-	renderSongInfo: function(description) {
-		var descriptionElm = document.createElement('p');
-		descriptionElm.className="song-description";
-		descriptionElm.innerHTML = 'Description: \n' + description;
-		return descriptionElm;
 	},
 
 	renderDeleteBtn: function() {
@@ -293,7 +285,7 @@ var playlistView = {
 				}, function(previousSong) {
 					playlistView.updateCurrentSong(previousSong, songId);
 					playlistView.player.loadVideoById(songId);
-					playlistView.reRenderCurrSongInfo(songId);
+					playlistView.renderCurrSongInfo(songId);
 				})
 			}
 		}(songId));
@@ -334,6 +326,7 @@ var playlistView = {
 					$("#" + previousSong).removeClass('current-song');
 					$("#" + songId).addClass('current-song');
 					playlistView.player.loadVideoById(songId);
+					playlistView.renderCurrSongInfo(songId);
 				})
 			}
 		}(songId));
@@ -395,7 +388,7 @@ var playlistView = {
 			// if (song == null) {
 			// 	playlistView.renderEmptyPlaylist();
 			// }
-			playlistView.reRenderCurrSongInfo(song)
+			playlistView.renderCurrSongInfo(song)
 		}) 
 	},
 
@@ -405,7 +398,7 @@ var playlistView = {
 			$.get("/next_song/", function(songs){
 				event.target.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
-				playlistView.reRenderCurrSongInfo(song[1]);
+				playlistView.renderCurrSongInfo(song[1]);
 			})    
     	}
 	},

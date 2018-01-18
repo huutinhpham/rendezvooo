@@ -134,6 +134,19 @@ form{
 	margin-top: 150px;
 }
 
+#curr-song-info {
+	margin-top: 40px;
+	.song-title {
+		font-size: $curr-song-title-size;
+		font-weight: $song-title-weight;
+	}
+	.song-info {
+		font-size: $curr-song-info-size;
+		font-weight: $curr-song-info-weight;
+		margin-top: 10px;
+	}
+}
+
 .song-container {
 	background-color: $card-bgc;
 	margin-bottom: 50px;
@@ -174,7 +187,7 @@ form{
 		order: 3;
 		margin-top: 5px;
 		flex-direction: column;
-		.info-button {
+		.song-info {
 			display: none;
 		}
 		.song-title {
@@ -255,7 +268,7 @@ ul {
 			.requester{
 				flex: 3;
 			}
-			.info-button{
+			.song-info{
 				flex: 1;
 				display: block;
 				font-size: $song-info-size;
