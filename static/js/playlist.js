@@ -7,17 +7,23 @@ var playlistView = {
 		this.ytKey = 'AIzaSyB-fC4XB3x1GXFoNY-4yTYzatwd4iEYX3M';
 		this.requestValidator;
 		this.player;
+		this.bindPrevSongBtn();
+		this.bindNextSongBtn();
+		this.bindRestartBtn();
+		this.bindShuffleBtn();
 	},
 
 	// ===== RENDER FUNCTIONS =====
 
 	renderPage: function() {
 		var requestBarElm = this.renderRequestBar();
+		var playlistBtns = this.renderPlaylistBtns();
 		var playerElm = this.renderPlayer();
-		var currSongInfo = document.createElement('div')
-		currSongInfo.id = 'curr-song-info'
+		var currSongInfo = document.createElement('div');
+		currSongInfo.id = 'curr-song-info';
 
 		$('#content').append(requestBarElm);
+		$('#content').append(playlistBtns);
 		$('#content').append(playerElm);
 		$('#content').append(currSongInfo);
 
@@ -56,6 +62,34 @@ var playlistView = {
 
 		return requestBtn;
 
+	},
+
+	renderPlaylistBtns: function() {
+		var playlistBtns = document.createElement('div');
+		playlistBtns.id = 'playlist-btns';
+
+		var prevSongBtn = this.renderPrevSongBtn();
+		var modeBtns = this.renderModeBtns();
+		var nextSongBtn = this.renderNextSongBtn();
+
+		playlistBtns.append(prevSongBtn);
+		playlistBtns.append(modeBtns);
+		playlistBtns.append(nextSongBtn);
+
+		return playlistBtns;
+	},
+
+	renderModeBtns: function() {
+		var modeBtns = document.createElement('div');
+		modeBtns.id = 'mode-btns';
+
+		var restartBtn = this.renderRestartBtn();
+		var shuffleBtn = this.renderShuffleBtn();
+
+		modeBtns.append(restartBtn);
+		modeBtns.append(shuffleBtn);
+
+		return modeBtns;
 	},
 
 	renderPlayer: function() {
@@ -203,17 +237,45 @@ var playlistView = {
 
 	renderUnlikeBtn: function(likes) {
 		var likeBtn = document.createElement('button');
-		likeBtn.className = "like-btn"
+		likeBtn.className = "like-btn";
 		likeBtn.innerHTML = "&#x2764" + " " + likes;
 
 		return likeBtn;
 	},
 
 	renderPlayBtn: function() {
-		var playBtn = document.createElement('button')
-		playBtn.className = 'play-btn fa'
-		playBtn.innerHTML = "&#xf144"
+		var playBtn = document.createElement('button');
+		playBtn.className = 'play-btn fa';
+		playBtn.innerHTML = "&#xf144";
 		return playBtn;
+	},
+
+	renderNextSongBtn: function() {
+		var nextSongBtn = document.createElement('button');
+		nextSongBtn.className = 'next-song-btn fa';
+		nextSongBtn.innerHTML = "Next &#xf04e";
+		return nextSongBtn;
+	},
+
+	renderPrevSongBtn: function() {
+		var prevSongBtn = document.createElement('button');
+		prevSongBtn.className = 'prev-song-btn fa';
+		prevSongBtn.innerHTML = "&#xf04a Previous";
+		return prevSongBtn;
+	},
+
+	renderRestartBtn: function() {
+		var restartBtn = document.createElement('button');
+		restartBtn.className = 'restart-song-btn fa';
+		restartBtn.innerHTML = "&#xf021 Restart";
+		return restartBtn;
+	},
+
+	renderShuffleBtn: function() {
+		var shuffleBtn = document.createElement('button');
+		shuffleBtn.className = 'shuf-song-btn fa';
+		shuffleBtn.innerHTML = "Shuffle &#xf074";
+		return shuffleBtn;
 	},
 
 	renderChannelInfo: function(channelTitle){
@@ -269,12 +331,39 @@ var playlistView = {
 			var ytId = playlistView.parseYTurl($('#request-input').val());
 			playlistView.validateRequest(ytId);
 			playlistView.postSongRequest(ytId);
-			$.get('/get_collaborator/', function(data) {
-				is_admin = data[0];
-				collaborator = data[1];
-				$("#playlist-container").append(playlistView.renderSongThumbnail(ytId, 0, collaborator, is_admin));
-			})
 		});
+	},
+
+	bindNextSongBtn: function() {
+		$('.next-song-btn').click(function() {
+			console.log('next 1')
+			$.get("/next_song/", function(songs){
+				console.log('next 2');
+				playlistView.player.loadVideoById(songs[1]);
+				playlistView.updateCurrentSong(songs[0], songs[1]);
+				playlistView.renderCurrSongInfo(songs[1]);
+			});
+		});
+	},
+
+	bindPrevSongBtn: function() {
+		$('.prev-song-btn').click(function() {
+			console.log('prev 1')
+			$.get("/prev_song/", function(songs) {
+				console.log('prev 2')
+				playlistView.player.loadVideoById(songs[1]);
+				playlistView.updateCurrentSong(songs[0], songs[1]);
+				playlistView.renderCurrSongInfo(songs[1]);
+			});
+		});
+	},
+
+	bindShuffleBtn: function() {
+
+	},
+
+	bindRestartBtn: function() {
+
 	},
 
 	bindThumbnail: function(songId) {
@@ -398,7 +487,7 @@ var playlistView = {
 			$.get("/next_song/", function(songs){
 				event.target.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
-				playlistView.renderCurrSongInfo(song[1]);
+				playlistView.renderCurrSongInfo(songs[1]);
 			})    
     	}
 	},
@@ -415,8 +504,8 @@ var playlistView = {
 	onRequestError: function(event) {
 		console.log(event.data);
 		if (event.data == 150 || event.data == 101) {
-			ytId = this.parseYTurl($('#request-input').val())
-			this.DeleteCopyRightSong(ytId);
+			ytId = playlistView.parseYTurl($('#request-input').val())
+			playlistView.DeleteCopyRightSong(ytId);
 			playlistView.deleteSongThumbnail(ytId);
 		}
 	},
@@ -439,6 +528,13 @@ var playlistView = {
 			yt_id: ytId
 		}, function(data) {
 			$('.request-feedback').html(data.error);
+			if (data.error == 'your song request has been added') {
+				$.get('/get_collaborator/', function(data) {
+					is_admin = data[0];
+					collaborator = data[1];
+					$("#playlist-container").append(playlistView.renderSongThumbnail(ytId, 0, collaborator, is_admin));
+				})
+			}
 		})
 	},
 
@@ -447,6 +543,7 @@ var playlistView = {
 			yt_id: ytId
 		})
 		$('.request-feedback').html("That video has copyright issues, please try a different link.")
+		this.deleteSongThumbnail(ytId);
 	},
 }
 

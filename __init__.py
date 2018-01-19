@@ -170,6 +170,30 @@ def next_song():
 		conn.close()
 		return jsonify([curr_song, playlist_songs[index][1]])
 
+@app.route('/prev_song/', methods=['GET'])
+@login_required
+def prev_song():
+	if request.method == 'GET':
+		pid = session['pid']
+		collaborator = session['collaborator']
+
+		c, conn = connection()
+		curr_song = GET_collaborator_request(c, conn, pid, collaborator)[3]
+		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+
+		index = 0;
+		for song in playlist_songs:
+			if song[1] == curr_song:
+				index -= 1;
+				break
+			index += 1
+		if index < 0:
+			index = len(playlist_songs) - 1
+
+		UPDATE_collaborator_song_request(c, conn, pid, collaborator, playlist_songs[index][1])
+		conn.close()
+		return jsonify([curr_song, playlist_songs[index][1]])
+
 #update the current song and return previous song
 @app.route('/change_current_song/', methods=['POST'])
 @login_required
