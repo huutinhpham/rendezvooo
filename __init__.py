@@ -69,6 +69,7 @@ def homepage():
 				session['collaborator'] = collaborator
 				session['admin'] = False
 				session['logged_in'] = True
+				session['mode'] = 'order'
 				if playlist[1] == collaborator:
 					session['admin'] = True
 				return redirect(url_for('playlist'))
@@ -97,6 +98,7 @@ def generate_playlist():
 			session['pid'] = pid
 			session['admin'] = True
 			session['collaborator'] = collaborator
+			session['mode'] = order
 
 
 			return redirect(url_for('playlist'))
@@ -128,9 +130,9 @@ def playlist():
 		flash(e)
 	return render_template("playlist.html", pid=session['pid'])
 
-@app.route('/load_first_song/', methods=['GET'])
+@app.route('/load_curr_song/', methods=['GET'])
 @login_required
-def load_first_song():
+def load_curr_song():
 	if request.method == 'GET':
 		pid = session['pid']
 		collaborator = session['collaborator']
@@ -143,13 +145,36 @@ def load_first_song():
 			if len(playlist_songs) > 0:
 				song = playlist_songs[0][1]
 				UPDATE_collaborator_song_request(c, conn, pid, collaborator, song)
+
 		conn.close()
 		return jsonify(song)
 
-#get next song, return current song along with next song
+#===== GET SONG functions return result song along with previous songs
+
+@app.route('/first_song/', methods=['GET'])
+@login_required
+def first_song():
+	if request.method == 'GET':
+		pid = session['pid']
+		collaborator = session['collaborator']
+		c, conn = connection()
+
+		curr_song = GET_collaborator_request(c, conn, pid, collaborator)[3]
+		song = GET_all_songs_request_sorted(c, conn, pid)[0][1]
+		UPDATE_collaborator_song_request(c, conn, pid, collaborator, song)
+		conn.close()
+		return jsonify(curr_song, song)
+
+
 @app.route('/next_song/', methods=['GET'])
 @login_required
 def next_song():
+	mode = session['mode']
+	if mode == 'shuffle':
+		return next_shuffle_song()
+	return next_order_song()
+
+def next_order_song():
 	if request.method == 'GET':
 		pid = session['pid']
 		collaborator = session['collaborator']
@@ -165,6 +190,26 @@ def next_song():
 				break
 		if index >= len(playlist_songs):
 			index = 0
+
+		UPDATE_collaborator_song_request(c, conn, pid, collaborator, playlist_songs[index][1])
+		conn.close()
+		return jsonify([curr_song, playlist_songs[index][1]])
+
+def next_shuffle_song():
+	if request.method == 'GET':
+		pid = session['pid']
+		collaborator = session['collaborator']
+
+		c, conn = connection()
+		curr_song = GET_collaborator_request(c, conn, pid, collaborator)[3]
+		playlist_songs = GET_all_songs_request_sorted(c, conn, pid)
+
+		playlist_len = len(playlist_songs)
+		index = 0
+		while True:
+			index = int(round(random.uniform(0, 1)*playlist_len)) - 1
+			if playlist_songs[index][1] != curr_song:
+				break;
 
 		UPDATE_collaborator_song_request(c, conn, pid, collaborator, playlist_songs[index][1])
 		conn.close()
@@ -194,7 +239,6 @@ def prev_song():
 		conn.close()
 		return jsonify([curr_song, playlist_songs[index][1]])
 
-#update the current song and return previous song
 @app.route('/change_current_song/', methods=['POST'])
 @login_required
 def change_current_song():
@@ -208,8 +252,21 @@ def change_current_song():
 		conn.close()
 		return jsonify(previousSong)
 
+@app.route('/change_mode/', methods=['POST'])
+@login_required
+def change_mode():
+	if request.method == 'POST':
+		curr_mode = request.form['curr_mode']
+		if (curr_mode == 'shuffle'):
+			session['mode'] = 'order'
+		else:
+	 		session['mode'] = 'shuffle'
 
-#Returns admin status along with songs within the playlist
+@app.route('/get_mode/', methods=['GET'])
+@login_required
+def get_mode():
+	return jsonify(session['mode'])
+
 @app.route('/get_playlist_data/', methods=['GET'])
 @login_required
 def get_playlist_data():
@@ -250,7 +307,6 @@ def is_liked():
 		if is_like_exist is None:
 			return jsonify(False)
 		return jsonify(True)
-
 
 @app.route('/liked/', methods=['POST'])
 @login_required

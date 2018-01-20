@@ -10,7 +10,7 @@ var playlistView = {
 		this.bindPrevSongBtn();
 		this.bindNextSongBtn();
 		this.bindRestartBtn();
-		this.bindShuffleBtn();
+		this.bindShuffleModeBtn();
 	},
 
 	// ===== RENDER FUNCTIONS =====
@@ -84,11 +84,18 @@ var playlistView = {
 		modeBtns.id = 'mode-btns';
 
 		var restartBtn = this.renderRestartBtn();
-		var shuffleBtn = this.renderShuffleBtn();
 
 		modeBtns.append(restartBtn);
-		modeBtns.append(shuffleBtn);
-
+		$.get('/get_mode/', function(mode) {
+			if (mode == 'shuffle') {
+				modeBtns.append(playlistView.renderOrderModeBtn());
+				playlistView.bindOrderModeBtn();
+			}
+			else{
+				modeBtns.append(playlistView.renderShuffleModeBtn());
+				playlistView.bindShuffleModeBtn();
+			}
+		})
 		return modeBtns;
 	},
 
@@ -266,16 +273,25 @@ var playlistView = {
 
 	renderRestartBtn: function() {
 		var restartBtn = document.createElement('button');
-		restartBtn.className = 'restart-song-btn fa';
+		restartBtn.className = 'restart-playlist-btn fa';
 		restartBtn.innerHTML = "&#xf021 Restart";
 		return restartBtn;
 	},
 
-	renderShuffleBtn: function() {
-		var shuffleBtn = document.createElement('button');
-		shuffleBtn.className = 'shuf-song-btn fa';
-		shuffleBtn.innerHTML = "Shuffle &#xf074";
-		return shuffleBtn;
+
+
+	renderShuffleModeBtn: function() {
+		var shuffleModeBtn = document.createElement('button');
+		shuffleModeBtn.className = 'shuf-song-btn fa';
+		shuffleModeBtn.innerHTML = "Shuffle &#xf074";
+		return shuffleModeBtn;
+	},
+
+	renderOrderModeBtn: function() {
+		var orderModeBtn = document.createElement('button');
+		orderModeBtn.className = 'order-song-btn fa';
+		orderModeBtn.innerHTML = "Shuffle &#xf074";
+		return orderModeBtn;		
 	},
 
 	renderChannelInfo: function(channelTitle){
@@ -348,9 +364,7 @@ var playlistView = {
 
 	bindPrevSongBtn: function() {
 		$('.prev-song-btn').click(function() {
-			console.log('prev 1')
 			$.get("/prev_song/", function(songs) {
-				console.log('prev 2')
 				playlistView.player.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -358,12 +372,38 @@ var playlistView = {
 		});
 	},
 
-	bindShuffleBtn: function() {
+	bindShuffleModeBtn: function() {
+		$('.shuf-song-btn').click(function() {
+			console.log('shuffle')
+			$.post("/change_mode/", {
+				curr_mode: 'order'
+			}, function() {
+				$('.shuf-song-btn').replaceWith(playlistView.renderOrderModeBtn());
+				playlistView.bindOrderModeBtn();
+			});
+		});
+	},
 
+	bindOrderModeBtn: function() {
+		$('.order-song-btn').click(function() {
+			console.log('order')
+			$.post("/change_mode/", {
+				curr_mode: 'shuffle'
+			},function() {
+				$('.order-song-btn').replaceWith(playlistView.renderShuffleModeBtn());
+				playlistView.bindShuffleModeBtn();
+			});
+		});
 	},
 
 	bindRestartBtn: function() {
-
+		$('.restart-playlist-btn').click(function() {
+			$.get("/first_song/", function(songs) {
+				playlistView.player.loadVideoById(songs[1]);
+				playlistView.updateCurrentSong(songs[0], songs[1]);
+				playlistView.renderCurrSongInfo(songs[1]);
+			});
+		});
 	},
 
 	bindThumbnail: function(songId) {
@@ -471,7 +511,7 @@ var playlistView = {
 	},
 
 	loadCurrentSong: function(event) {
-		$.get("/load_first_song/", function(song){
+		$.get("/load_curr_song/", function(song){
 			event.target.cueVideoById(song);
 			$("#" + song).addClass('current-song');
 			// if (song == null) {
