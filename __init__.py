@@ -32,85 +32,80 @@ def how_it_works():
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
 	error = ''
-	try:
-		form = AccessPlaylistForm(request.form)
+	form = AccessPlaylistForm(request.form)
+	if request.method == 'POST' and form.validate():
 
-		if request.method == 'POST' and form.validate():
+		collaborator = bleach.clean(form.name.data)
+		pid = bleach.clean(form.pid.data)
+		encrypted_opt_pw = check_opt_pw(form.opt_pw.data)
 
-			collaborator = bleach.clean(form.name.data)
-			pid = trim_pid(bleach.clean(form.pid.data))
-			encrypted_opt_pw = check_opt_pw(form.opt_pw.data)
+		c, conn = connection()
 
-			c, conn = connection()
+		### VERIFY IF PLAYLIST EXISTS ###
+		playlist = None
+		playlist_error = None
+		if len(pid) != 8:
+			error = "The Playlist URL or playlist code is invalid. it should have exactly 8 characters."
+			return render_template("homepage.html", error=error, form=form)
+		else:
+			playlist = GET_playlist_request(c, conn, pid)
+			playlist_error = validate_playlist_request(playlist)
 
-			### VERIFY IF PLAYLIST EXISTS ###
-			playlist = None
-			playlist_error = None
-			if len(pid) != 8:
-				error = "Playlist Code should have exactly 8 characters."
-				return render_template("homepage.html", error=error, form=form)
-			else:
-				playlist = GET_playlist_request(c, conn, pid)
-				playlist_error = validate_playlist_request(playlist)
-
-			### VERIFY USER IF USER IS NOT NEW ###
-			is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
-			collaborator_error = None
-			if is_name_exist != None:
-				collaborator_error = validate_name_request(collaborator, is_name_exist[2], form.opt_pw.data)
-			else:
+		### VERIFY USER IF USER IS NOT NEW ###
+		is_name_exist = GET_collaborator_request(c, conn, pid, collaborator)
+		collaborator_error = None
+		if is_name_exist != None:
+			collaborator_error = validate_collaborator_pass_request(is_name_exist[2], form.opt_pw.data)
+		else:
+			if (validate_collaborator_name_request(collaborator) is None):
 				POST_collaborator_request(c, conn, pid, collaborator, encrypted_opt_pw, None)
 
-			error = playlist_error or collaborator_error
-			conn.close()
+		error = playlist_error or collaborator_error
 
-			if error is None:
-				session['pid'] = pid
-				session['collaborator'] = collaborator
-				session['admin'] = False
-				session['logged_in'] = True
-				session['mode'] = 'order'
-				if playlist[1] == collaborator:
-					session['admin'] = True
-				return redirect(url_for('playlist'))
-			return render_template("homepage.html", error=error, form=form)
-	except Exception as e:
-		flash(e)
-
-	return render_template("homepage.html", error=error, form=form)
+		conn.close()
+		if error is None:
+			session['pid'] = pid
+			session['collaborator'] = collaborator
+			session['admin'] = False
+			session['logged_in'] = True
+			session['mode'] = 'order'
+			if playlist[1] == collaborator:
+				session['admin'] = True
+			return redirect(url_for('playlist', pid=pid))
+		return render_template("homepage.html", error=error, form=form)
+	return render_template("homepage.html", form=form)
 
 @app.route('/generate-playlist/', methods=['GET', 'POST'])
 def generate_playlist():
-	try:
-		form = GeneratePlaylistForm(request.form)	
-		if request.method == "POST" and form.validate():
-			collaborator = bleach.clean(form.name.data)
-			email = bleach.clean(form.email.data)
-			encrypted_pw = pbkdf2_sha256.encrypt((str(form.password.data)))
+	form = GeneratePlaylistForm(request.form)	
+	if request.method == "POST" and form.validate():
+		collaborator = bleach.clean(form.name.data)
+		email = bleach.clean(form.email.data)
+		encrypted_pw = pbkdf2_sha256.encrypt((str(form.password.data)))
 
-			c, conn = connection()
-			pid = generate_pid(c, conn, 8)
-			POST_playlist_request(c, conn, pid, collaborator, email, False)
-			POST_collaborator_request(c, conn, pid, collaborator, encrypted_pw, None)
-			conn.close()
+		c, conn = connection()
+		pid = generate_pid(c, conn, 8)
+		POST_playlist_request(c, conn, pid, collaborator, email, False)
+		POST_collaborator_request(c, conn, pid, collaborator, encrypted_pw, None)
+		conn.close()
 
-			session['logged_in'] = True
-			session['pid'] = pid
-			session['admin'] = True
-			session['collaborator'] = collaborator
-			session['mode'] = order
+		session['logged_in'] = True
+		session['pid'] = pid
+		session['admin'] = True
+		session['collaborator'] = collaborator
+		session['mode'] = 'order'
 
 
-			return redirect(url_for('playlist'))
-
-	except Exception as e:
-		flash(e)
+		return redirect(url_for('playlist'))
 	return render_template("generate-playlist.html", form=form)
 
-@app.route('/playlist/', methods=['GET', 'POST'])
-@login_required
-def playlist():
-	try:
+@app.route('/<pid>', methods=['GET', 'POST'])
+def playlist(pid):
+	if session.get('logged_in') is not True:
+		form = AccessPlaylistForm(request.form)
+		form.pid.data = pid
+		return render_template('homepage.html', form=form)
+	else:
 		c, conn = connection()
 		if request.method == 'POST':
 
@@ -126,9 +121,8 @@ def playlist():
 				error = 'your song request has been added'
 			return jsonify(error=error)
 		conn.close()
-	except Exception as e:
-		flash(e)
-	return render_template("playlist.html", pid=session['pid'])
+		return render_template("playlist.html", pid=session['pid'])
+
 
 @app.route('/load_curr_song/', methods=['GET'])
 @login_required

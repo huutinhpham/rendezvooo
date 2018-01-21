@@ -82,6 +82,7 @@ form{
 		height: 35px;
 		color: $background-color;
 		@include btn;
+		flex: 1;
 	}
 }
 
@@ -110,6 +111,34 @@ form{
 		@include btn;
 		flex: 2;
 	}
+}
+
+#playlist-btns {
+	@include flex;
+	justify-content: space-between;
+	margin-top: 10px;
+	button {
+		padding: 6px 10px 6px 10px;
+		border-color: $light;
+		@include btn;
+	}
+	#mode-btns {
+		@include flex;
+		justify-content: space-between;
+	}
+	.order-song-btn{
+		background-color: $background-color;
+		border-style: solid;
+		border-width: 1px;
+		border-color: $light;
+		color: $light;
+	}
+	// #mode-btns{
+	// 	flex: 1
+	// }
+	// .next-song-btn{
+	// 	flex: 1
+	// }
 }
 
 #player-container {

@@ -74,11 +74,11 @@ form {
     padding-left: 0;
     height: 35px;
     color: #14130f;
-    flex: 1;
     border-width: 1px;
     border-style: solid;
     border-color: #14130f;
-    background-color: #c07754; }
+    background-color: #c07754;
+    flex: 1; }
     .submit-btns input:hover {
       cursor: pointer; }
 
@@ -90,7 +90,7 @@ form {
   #playlist-header #pid {
     color: #c07754; }
   #playlist-header #instruction {
-    font-size: 12px; }
+    font-size: 15px; }
 
 #request-bar {
   display: -webkit-flex;
@@ -105,7 +105,6 @@ form {
     border-color: #33221a;
     flex: 8; }
   #request-bar #request-btn {
-    flex: 1;
     border-width: 1px;
     border-style: solid;
     border-color: #14130f;
@@ -113,6 +112,33 @@ form {
     flex: 2; }
     #request-bar #request-btn:hover {
       cursor: pointer; }
+
+#playlist-btns {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 10px; }
+  #playlist-btns button {
+    padding: 6px 10px 6px 10px;
+    border-color: #c07754;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #14130f;
+    background-color: #c07754; }
+    #playlist-btns button:hover {
+      cursor: pointer; }
+  #playlist-btns #mode-btns {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; }
+  #playlist-btns .order-song-btn {
+    background-color: #14130f;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #c07754;
+    color: #c07754; }
 
 #player-container {
   position: relative;

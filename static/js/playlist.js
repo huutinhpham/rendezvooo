@@ -10,7 +10,6 @@ var playlistView = {
 		this.bindPrevSongBtn();
 		this.bindNextSongBtn();
 		this.bindRestartBtn();
-		this.bindShuffleModeBtn();
 	},
 
 	// ===== RENDER FUNCTIONS =====
@@ -23,8 +22,8 @@ var playlistView = {
 		currSongInfo.id = 'curr-song-info';
 
 		$('#content').append(requestBarElm);
-		$('#content').append(playlistBtns);
 		$('#content').append(playerElm);
+		$('#content').append(playlistBtns);
 		$('#content').append(currSongInfo);
 
 	},
@@ -352,9 +351,7 @@ var playlistView = {
 
 	bindNextSongBtn: function() {
 		$('.next-song-btn').click(function() {
-			console.log('next 1')
 			$.get("/next_song/", function(songs){
-				console.log('next 2');
 				playlistView.player.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -374,7 +371,6 @@ var playlistView = {
 
 	bindShuffleModeBtn: function() {
 		$('.shuf-song-btn').click(function() {
-			console.log('shuffle')
 			$.post("/change_mode/", {
 				curr_mode: 'order'
 			}, function() {
@@ -386,7 +382,6 @@ var playlistView = {
 
 	bindOrderModeBtn: function() {
 		$('.order-song-btn').click(function() {
-			console.log('order')
 			$.post("/change_mode/", {
 				curr_mode: 'shuffle'
 			},function() {
@@ -486,7 +481,6 @@ var playlistView = {
 	bindCancelDeleteBtn: function(songId) {
 		$("#" + songId + ' .cancel-delete-btn').click(function(songId) {
 			return function() {
-				console.log('hello')
 				$('#' + songId + ' .confirm-div').replaceWith(playlistView.renderDeleteBtn());
 				playlistView.bindDeleteBtn(songId);
 			}
@@ -542,7 +536,6 @@ var playlistView = {
 	},
 
 	onRequestError: function(event) {
-		console.log(event.data);
 		if (event.data == 150 || event.data == 101) {
 			ytId = playlistView.parseYTurl($('#request-input').val())
 			playlistView.DeleteCopyRightSong(ytId);

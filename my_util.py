@@ -29,12 +29,18 @@ def validate_song_request(is_pid_exist, is_song_exist, yt_id):
 		error = 'Please enter a valid YouTube URL'
 	return error
 
-def validate_name_request(collaborator, db_encrypted_opt_pw, password):
+def validate_collaborator_pass_request(db_encrypted_opt_pw, password):
 	error = None
 	if db_encrypted_opt_pw == None and password != '':
 		error = "Name is taken. Please try again"
 	if (db_encrypted_opt_pw != None) and not (pbkdf2_sha256.verify(password, db_encrypted_opt_pw)):
 		error = "Password is incorrect, or name is taken. Please try again."
+	return error
+
+def validate_collaborator_name_request(collaborator):
+	error = None
+	if (len(collaborator) > 25):
+		error = 'Your name exceeded 25 characters long, or you are trying to inject my web-app (nice try).'
 	return error
 
 
