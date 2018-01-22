@@ -33,6 +33,8 @@ def how_it_works():
 def homepage():
 	error = ''
 	form = AccessPlaylistForm(request.form)
+	if session.get('pid'):
+		return redirect(url_for('playlist', pid=session['pid']))
 	if request.method == 'POST' and form.validate():
 
 		collaborator = bleach.clean(form.name.data)
