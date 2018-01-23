@@ -7,7 +7,7 @@
             <title>Rendezvooo</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-            <link rel="stylesheet" href="../static/css/style.css">
+            <link rel="stylesheet" href="/rendezvooo/static/css/style.css">
         {% endblock %}
 
         <title>{% block title %}{% endblock %} - Rendezvooo</title>
@@ -17,12 +17,12 @@
         
         <div id="content">
             <ul id="nav-links">
-                <li class="link"><a href="/">Rendezvooo</a></li>
-                <li class="link"><a href="/how-it-works/">How it Works</a></li>
+                <li class="link"><a href="/rendezvooo">Rendezvooo</a></li>
+                <li class="link"><a href="/rendezvooo/how-it-works">How it Works</a></li>
                 {% if session.logged_in %}
-                    <li class="link"><a href="/logout/">Logout</a></li>
+                    <li class="link"><a href="/rendezvooo/logout">Logout</a></li>
                 {% else %}
-                    <li class="link"><a href="/generate-playlist/">New Playlist</a></li>
+                    <li class="link"><a href="/rendezvooo/generate-playlist">New Playlist</a></li>
                 {% endif %}
             </ul>
 

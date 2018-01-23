@@ -4,7 +4,7 @@
 
     <p class="intro">Rendezvooo</p>
     {% from "_formhelper.html" import render_field %}
-    <form method="POST" action="/">
+    <form method="POST" action="/rendezvooo/">
         {% if error %}
             <p class="error"><strong>Error:</strong>{{error}}</p>
         {% endif %}
@@ -21,5 +21,5 @@
     </form>
         
     <script>var response = '{{ response }}'</script>
-    <script src="../static/js/homepage.js"></script>
+    <script src="/rendezvooo/static/js/homepage.js"></script>
 {% endblock %}
