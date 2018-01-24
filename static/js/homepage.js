@@ -7,7 +7,7 @@ var homePageView = {
 
 	bindNewPlaylistBtn: function() {
 		$('#new-playlist-btn').click(function(){
-			window.location.href='/generate-playlist/'
+			window.location.href='/rendezvooo/generate-playlist/'
 		});
 	},
 

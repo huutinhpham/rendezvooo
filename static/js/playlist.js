@@ -85,7 +85,7 @@ var playlistView = {
 		var restartBtn = this.renderRestartBtn();
 
 		modeBtns.append(restartBtn);
-		$.get('/rendezvooo/get_mode/', function(mode) {
+		$.get('/rendezvooo/api/get_mode/', function(mode) {
 			if (mode == 'shuffle') {
 				modeBtns.append(playlistView.renderOrderModeBtn());
 				playlistView.bindOrderModeBtn();
@@ -114,13 +114,13 @@ var playlistView = {
 	},
 
 	renderPlaylist: function() {
-		$.get("/rendezvooo/get_playlist_data/", function(data){
+		$.get("/rendezvooo/api/get_playlist_data/", function(data){
 			var playlistContainer = document.createElement('div');
 			is_admin=data[0];
 			songs=data[1];
 			playlistContainer.id = 'playlist-container';
 			for (var i = 0; i < songs.length; i++) {
-				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][2], songs[i][3], is_admin);
+				var songView = playlistView.renderSongThumbnail(songs[i][1], songs[i][3], songs[i][2], is_admin);
 				playlistContainer.append(songView);
 			}
 
@@ -351,7 +351,7 @@ var playlistView = {
 
 	bindNextSongBtn: function() {
 		$('.next-song-btn').click(function() {
-			$.get("/rendezvooo/next_song/", function(songs){
+			$.get("/rendezvooo/api/get_next_song/", function(songs){
 				playlistView.player.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -361,7 +361,7 @@ var playlistView = {
 
 	bindPrevSongBtn: function() {
 		$('.prev-song-btn').click(function() {
-			$.get("/rendezvooo/prev_song/", function(songs) {
+			$.get("/rendezvooo/api/get_prev_song/", function(songs) {
 				playlistView.player.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -371,7 +371,7 @@ var playlistView = {
 
 	bindShuffleModeBtn: function() {
 		$('.shuf-song-btn').click(function() {
-			$.post("/rendezvooo/change_mode/", {
+			$.post("/rendezvooo/api/change_mode/", {
 				curr_mode: 'order'
 			}, function() {
 				$('.shuf-song-btn').replaceWith(playlistView.renderOrderModeBtn());
@@ -382,7 +382,7 @@ var playlistView = {
 
 	bindOrderModeBtn: function() {
 		$('.order-song-btn').click(function() {
-			$.post("/rendezvooo/change_mode/", {
+			$.post("/rendezvooo/api/change_mode/", {
 				curr_mode: 'shuffle'
 			},function() {
 				$('.order-song-btn').replaceWith(playlistView.renderShuffleModeBtn());
@@ -393,7 +393,7 @@ var playlistView = {
 
 	bindRestartBtn: function() {
 		$('.restart-playlist-btn').click(function() {
-			$.get("/rendezvooo/first_song/", function(songs) {
+			$.get("/rendezvooo/api/get_first_song/", function(songs) {
 				playlistView.player.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -404,7 +404,7 @@ var playlistView = {
 	bindThumbnail: function(songId) {
 		$('#' + songId + ' .thumbnail').click(function(songId){
 			return function() {
-				$.post("/rendezvooo/change_current_song/", {
+				$.post("/rendezvooo/api/change_current_song/", {
 					yt_id: songId
 				}, function(previousSong) {
 					playlistView.updateCurrentSong(previousSong, songId);
@@ -418,7 +418,7 @@ var playlistView = {
 	bindLikeBtn: function(songId) {
 		$('#' + songId + ' .like-btn').click(function(songId){
 			return function() {
-				$.post("/rendezvooo/liked/", {
+				$.post("/rendezvooo/api/liked/", {
 					yt_id: songId
 				}, function(likes) {
 					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderUnlikeBtn(likes));
@@ -431,7 +431,7 @@ var playlistView = {
 	bindUnlikeBtn: function(songId) {
 		$('#' + songId + ' .like-btn').click(function(songId){
 			return function() {
-				$.post("/rendezvooo/unliked/", {
+				$.post("/rendezvooo/api/unliked/", {
 					yt_id: songId
 				}, function(likes) {
 					$('#' + songId + ' .like-btn').replaceWith(playlistView.renderLikeBtn(likes));
@@ -444,7 +444,7 @@ var playlistView = {
 	bindPlayBtn: function(songId) {
 		$('#' + songId + ' .play-btn').click(function(songId){
 			return function() {
-				$.post("/rendezvooo/change_current_song/", {
+				$.post("/rendezvooo/api/change_current_song/", {
 					yt_id: songId
 				}, function(previousSong) {
 					$("#" + previousSong).removeClass('current-song');
@@ -469,7 +469,7 @@ var playlistView = {
 	bindDeleteConfirmBtn: function(songId) {
 		$('#' + songId + ' .delete-confirm-btn').click(function(songId) {
 			return function() {
-				$.post('/rendezvooo/delete_song/', {
+				$.post('/rendezvooo/api/delete_song/', {
 					yt_id: songId
 				}, function() {
 					playlistView.deleteSongThumbnail(songId);
@@ -491,7 +491,7 @@ var playlistView = {
 	// ===== CONTROLLER FUNCTIONS =====
 
 	loadLikeFeatures: function(songId, likes) {
-		$.post('/rendezvooo/is_liked/', {
+		$.post('/rendezvooo/api/is_liked/', {
 			yt_id: songId
 		}, function(is_liked) {
 			if (is_liked != true) {
@@ -505,7 +505,7 @@ var playlistView = {
 	},
 
 	loadCurrentSong: function(event) {
-		$.get("/rendezvooo/load_curr_song/", function(song){
+		$.get("/rendezvooo/api/get_curr_song/", function(song){
 			event.target.cueVideoById(song);
 			$("#" + song).addClass('current-song');
 			// if (song == null) {
@@ -518,7 +518,7 @@ var playlistView = {
 	playNextSong: function(event) {
 		if(event.data === 0) {
 			playlistView.reRenderPlaylist();
-			$.get("/rendezvooo/next_song/", function(songs){
+			$.get("/rendezvooo/api/get_next_song/", function(songs){
 				event.target.loadVideoById(songs[1]);
 				playlistView.updateCurrentSong(songs[0], songs[1]);
 				playlistView.renderCurrSongInfo(songs[1]);
@@ -557,12 +557,12 @@ var playlistView = {
 	},
 
 	postSongRequest: function(ytId) {
-		$.post("/rendezvooo/playlist/", {
+		$.post("/rendezvooo/api/request_song/", {
 			yt_id: ytId
 		}, function(data) {
 			$('.request-feedback').html(data.error);
 			if (data.error == 'your song request has been added') {
-				$.get('/rendezvooo/get_collaborator/', function(data) {
+				$.get('/rendezvooo/api/get_collaborator/', function(data) {
 					is_admin = data[0];
 					collaborator = data[1];
 					$("#playlist-container").append(playlistView.renderSongThumbnail(ytId, 0, collaborator, is_admin));
@@ -572,7 +572,7 @@ var playlistView = {
 	},
 
 	DeleteCopyRightSong: function(ytId) {
-		$.post('/rendezvooo/delete_song/', {
+		$.post('/rendezvooo/api/delete_song/', {
 			yt_id: ytId
 		})
 		$('.request-feedback').html("That video has copyright issues, please try a different link.")
