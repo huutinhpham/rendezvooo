@@ -5,6 +5,8 @@ Rendezvooo
 
 collaborative music web application that uses YouTube API to create playlists. Users are able to collaboratively build and share playlists by using youtube URLs. Webapp includes an upvote system, where songs can be played and sorted by likes.
 
+[Application](http://huutinhpham.com/rendezvooo)
+
 ## Objective
 
 To improve on all aspects of fullstack development: UI/UX design, security/authentication, backend design. To build an application from the ground without any frameworks to understand every aspects within a webapp.
